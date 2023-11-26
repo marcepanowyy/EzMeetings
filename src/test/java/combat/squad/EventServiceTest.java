@@ -68,8 +68,20 @@ public class EventServiceTest {
 
     @Test
     public void testCreateEvent() {
-       //TODO
+        Long userId = 1L;
+        UserEntity mockUser = new UserEntity("TestUser");
+        EventDto eventDto = new EventDto("Event Name", "Description", new Date(), "Location", userId, Collections.emptyList());
+
+        when(userService.getUserById(userId)).thenReturn(mockUser);
+        when(eventRepository.save(any(EventEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        EventEntity createdEvent = eventService.createEvent(eventDto);
+
+        assertNotNull(createdEvent);
+        assertEquals("Event Name", createdEvent.getName());
+        assertEquals("Description", createdEvent.getDescription());
+        assertEquals("Location", createdEvent.getLocation());
     }
+
 
     @Test
     public void testUpdateEvent() {
