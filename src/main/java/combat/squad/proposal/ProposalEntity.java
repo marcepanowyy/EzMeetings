@@ -2,8 +2,11 @@ package combat.squad.proposal;
 
 import combat.squad.event.EventEntity;
 import combat.squad.user.UserEntity;
+import combat.squad.vote.VoteEntity;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -15,18 +18,23 @@ public class ProposalEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    private EventEntity event;
-
-    @ManyToMany(mappedBy = "selectedProposals")
-    private List<UserEntity> participants;
-
     private Date startDate;
     private Date endDate;
 
-    public ProposalEntity(Date startDate, Date endDate) {
+    @ManyToOne
+    private EventEntity event;
+
+    @CreatedDate
+    private Date created;
+
+    @OneToMany(mappedBy = "proposal")
+    private List<VoteEntity> votes;
+
+    public ProposalEntity(EventEntity event, Date startDate, Date endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
+        this.event = event;
+        this.votes = new ArrayList<>();
     }
 
     public Long getId() {

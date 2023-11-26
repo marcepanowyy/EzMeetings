@@ -2,6 +2,7 @@ package combat.squad.event;
 
 import combat.squad.proposal.ProposalEntity;
 import combat.squad.user.UserEntity;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -19,6 +20,18 @@ public class EventEntity {
 
     private String description;
 
+    public List<ProposalEntity> getEventProposals() {
+        return eventProposals;
+    }
+
+    public UserEntity getCreator() {
+        return creator;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
     private Date finalDate;
 
     private String location;
@@ -28,6 +41,9 @@ public class EventEntity {
 
     @ManyToOne
     private UserEntity creator;
+
+    @CreatedDate
+    private Date created;
 
     public EventEntity(String name, String description, Date finalDate, String location, UserEntity creator, List<ProposalEntity> eventProposals) {
         this.name = name;
@@ -76,6 +92,10 @@ public class EventEntity {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public void setEventProposals(List<ProposalEntity> eventProposals) {
+        this.eventProposals = eventProposals;
     }
 
     public EventEntity() {

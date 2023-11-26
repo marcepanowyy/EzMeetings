@@ -2,7 +2,7 @@ Plan działań:
 
 Model Diagram
 
-![img_1.png](img_1.png)
+![db_diagram.png](db_diagram.png)
 
 Frameworki:
 
@@ -14,6 +14,8 @@ czy admin moze zaprosic jkaies osoby?? - czy przechowywacgdzies info
 o wszystkich zaproszonych uczesnitakch??????????
 
 testing container??
+
+add dto + ro
 
 add validation pipe
 add dto + validations

@@ -25,18 +25,18 @@ public class EventController {
     }
 
     @PostMapping
-    public EventEntity createEvent(@RequestBody EventEntity eventEntity) {
-        return this.eventService.createEvent(eventEntity);
+    public EventEntity createEvent(@RequestBody EventDto eventDto) {
+        return this.eventService.createEvent(eventDto);
     }
 
-    @PutMapping
-    public EventEntity updateEvent(@RequestBody EventEntity eventEntity) {
-        return this.eventService.updateEvent(eventEntity);
-    }
-
-    @DeleteMapping("{id}")
-    public void deleteEvent(@PathVariable("id") Long id){
-        this.eventService.deleteEvent(id);
-    }
+//    @PutMapping
+//    public EventEntity updateEvent(@RequestBody EventEntity eventEntity) {
+//        return this.eventService.updateEvent(eventEntity);
+//    }
+//
+//    @DeleteMapping("{id}")
+//    public void deleteEvent(@PathVariable("id") Long id){
+//        this.eventService.deleteEvent(id);
+//    }
 
 }

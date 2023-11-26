@@ -1,5 +1,9 @@
 package combat.squad.proposal;
 
+import combat.squad.event.EventEntity;
+import combat.squad.event.EventRepository;
+import combat.squad.event.EventService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -7,10 +11,16 @@ import java.util.List;
 @Service
 public class ProposalService {
 
-private final ProposalRepository proposalRepository;
+    private final ProposalRepository proposalRepository;
 
-    public ProposalService(ProposalRepository proposalRepository) {
+//    private final EventService eventService;
+    private final EventRepository eventRepository;
+
+//    public ProposalService(ProposalRepository proposalRepository, EventService eventService) {
+    public ProposalService(ProposalRepository proposalRepository, EventRepository eventRepository) {
         this.proposalRepository = proposalRepository;
+//        this.eventService = eventService;
+        this.eventRepository = eventRepository;
     }
 
     public List<ProposalEntity> getProposals() {
@@ -21,7 +31,17 @@ private final ProposalRepository proposalRepository;
         return this.proposalRepository.findById(id).orElseThrow();
     }
 
-    public ProposalEntity createProposal(ProposalEntity proposalEntity) {
+    public ProposalEntity createProposal(ProposalDto proposalDTO, Long eventId){
+
+//        EventEntity event = this.eventService.getEventById(eventId);
+        EventEntity event = this.eventRepository.findById(eventId).orElseThrow();
+
+        ProposalEntity proposalEntity = new ProposalEntity(
+                event,
+                proposalDTO.startDate(),
+                proposalDTO.endDate()
+        );
+
         return this.proposalRepository.save(proposalEntity);
     }
 

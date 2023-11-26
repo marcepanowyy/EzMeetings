@@ -25,9 +25,9 @@ public class ProposalController {
         return this.proposalService.getProposalById(id);
     }
 
-    @PostMapping
-    public ProposalEntity createProposal(@RequestBody ProposalEntity proposalEntity) {
-        return this.proposalService.createProposal(proposalEntity);
+    @PostMapping("{eventId}")
+    public ProposalEntity createProposal(@RequestBody ProposalDto proposalDTO, @PathVariable("eventId") Long eventId) {
+        return this.proposalService.createProposal(proposalDTO, eventId);
     }
 
     @PutMapping

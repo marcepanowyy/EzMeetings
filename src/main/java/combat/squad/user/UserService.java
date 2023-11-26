@@ -19,16 +19,23 @@ public class UserService {
         return this.userRepository.findById(id).orElseThrow();
     }
 
-    public UserEntity createUser(UserEntity userEntity) {
+    public UserEntity createUser(UserDto userDto) {
+
+        // unique decorator on column nickname
+        String nickname = userDto.nickname();
+
+        UserEntity userEntity = new UserEntity(
+                userDto.nickname()
+        );
         return this.userRepository.save(userEntity);
     }
 
-    public UserEntity updateUser(UserEntity userEntity) {
-        return this.userRepository.save(userEntity);
-    }
+//    public UserEntity updateUser(UserEntity userEntity) {
+//        return this.userRepository.save(userEntity);
+//    }
 
-    public void deleteUser(Long id) {
-        this.userRepository.deleteById(id);
-    }
+//    public void deleteUser(Long id) {
+//        this.userRepository.deleteById(id);
+//    }
 
 }

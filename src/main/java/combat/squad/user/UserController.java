@@ -25,19 +25,19 @@ public class UserController {
     }
 
     @PostMapping
-    public UserEntity createUser(@RequestBody UserEntity userEntity) {
-        return this.userService.createUser(userEntity);
+    public UserEntity createUser(@RequestBody UserDto userDto) {
+        return this.userService.createUser(userDto);
     }
 
-    @PutMapping
-    public UserEntity updateUser(@RequestBody UserEntity userEntity) {
-        return this.userService.updateUser(userEntity);
-    }
-
-    @DeleteMapping("{id}")
-    public void deleteUser(@PathVariable("id") Long id){
-        this.userService.deleteUser(id);
-    }
+//    @PutMapping
+//    public UserEntity updateUser(@RequestBody UserEntity userEntity) {
+//        return this.userService.updateUser(userEntity);
+//    }
+//
+//    @DeleteMapping("{id}")
+//    public void deleteUser(@PathVariable("id") Long id){
+//        this.userService.deleteUser(id);
+//    }
 
 
 }
