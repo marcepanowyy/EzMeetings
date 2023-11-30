@@ -28,7 +28,7 @@ JPA (Hibernate) <br>
 PostgreSQL <br>
 
 ### Model Diagram
-![db_diagram.png](db_diagram.png)
+![db_diagram.PNG](db_diagram.PNG)
 
 ## Uruchomienie aplikacji
 W celu uruchomienia aplikacji konieczne jest pobranie PostegreSQL. Polecamy przy okazji pobrać
