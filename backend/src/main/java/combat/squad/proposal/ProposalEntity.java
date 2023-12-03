@@ -8,6 +8,7 @@ import combat.squad.vote.VoteEntity;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
+import javax.validation.constraints.FutureOrPresent;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -20,7 +21,11 @@ public class ProposalEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+    @FutureOrPresent(message = "Start date must be present or future date")
     private Date startDate;
+
+    @FutureOrPresent(message = "End date must be present or future date")
     private Date endDate;
 
     @ManyToOne
@@ -35,6 +40,9 @@ public class ProposalEntity {
     private List<VoteEntity> votes;
 
     public ProposalEntity(EventEntity event, Date startDate, Date endDate) {
+        if (startDate != null && endDate != null && startDate.after(endDate)) {
+            throw new IllegalArgumentException("Start date must be before end date");
+        }
         this.startDate = startDate;
         this.endDate = endDate;
         this.event = event;

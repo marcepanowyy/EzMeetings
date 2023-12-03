@@ -30,11 +30,6 @@ public class ProposalController {
         return this.proposalService.createProposal(proposalDTO, eventId);
     }
 
-    @PutMapping
-    public ProposalEntity updateProposal(@RequestBody ProposalEntity proposalEntity) {
-        return this.proposalService.updateProposal(proposalEntity);
-    }
-
     @DeleteMapping("{id}")
     public void deleteProposal(@PathVariable("id") Long id){
         this.proposalService.deleteProposal(id);

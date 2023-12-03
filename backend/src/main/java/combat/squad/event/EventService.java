@@ -42,15 +42,17 @@ public class EventService {
         EventEntity eventEntity = new EventEntity(
                 eventDto.name(),
                 eventDto.description(),
-                eventDto.finalDate(),
+                null,
                 eventDto.location(),
                 user,
                 new ArrayList<>()
         );
 
-        eventEntity = this.eventRepository.save(eventEntity);
-
         List<ProposalDto> proposals = eventDto.eventProposals();
+        if (proposals.isEmpty()) {
+            throw new IllegalArgumentException("Event must have at least one proposal");
+        }
+        eventEntity = this.eventRepository.save(eventEntity);
         List<ProposalEntity> proposalEntities = new ArrayList<>();
 
         for (ProposalDto proposalDTO : proposals) {
@@ -62,8 +64,12 @@ public class EventService {
         return this.eventRepository.save(eventEntity);
     }
 
-    public EventEntity updateEvent(EventEntity eventEntity) {
-        return this.eventRepository.save(eventEntity);
+    public EventEntity updateEvent(Long id, EventDto eventDto) {
+        EventEntity event = this.eventRepository.findById(id).orElseThrow();
+        event.setName(eventDto.name());
+        event.setDescription(eventDto.description());
+        event.setLocation(eventDto.location());
+        return this.eventRepository.save(event);
     }
 
     public void deleteEvent(Long id) {
