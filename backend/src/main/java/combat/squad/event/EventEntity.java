@@ -1,5 +1,7 @@
 package combat.squad.event;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import combat.squad.proposal.ProposalEntity;
 import combat.squad.user.UserEntity;
 import org.springframework.data.annotation.CreatedDate;
@@ -37,9 +39,11 @@ public class EventEntity {
     private String location;
 
     @OneToMany(mappedBy = "event")
+    @JsonManagedReference
     private List<ProposalEntity> eventProposals;
 
     @ManyToOne
+    @JsonBackReference
     private UserEntity creator;
 
     @CreatedDate

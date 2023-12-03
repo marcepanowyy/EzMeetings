@@ -4,11 +4,19 @@
 <?import javafx.scene.control.Label?>
 
 
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Button?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="combat.squad.controllers.MainController">
 
-    <Label text="working"/>
-    <Label fx:id="label" text="Dane z backendu: brak"/>
+    <Button fx:id="addEventButton" text="Refresh" onAction="#refreshEvents"/>
+    <Label text="Events List"/>
+
+    <ListView fx:id="eventsListView">
+    </ListView>
+
+    <Label text="Selected Event Details"/>
+    <Label fx:id="eventDetailsLabel" text="Select an event to view details."/>
 
 </VBox>

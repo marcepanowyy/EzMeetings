@@ -1,5 +1,6 @@
 package combat.squad.user;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import combat.squad.event.EventEntity;
 import combat.squad.proposal.ProposalEntity;
 import combat.squad.vote.VoteEntity;
@@ -22,9 +23,11 @@ public class UserEntity {
     private String nickname;
 
     @OneToMany(mappedBy = "creator")
+    @JsonManagedReference
     private List<EventEntity> events;
 
     @OneToMany(mappedBy = "voter")
+    @JsonManagedReference
     private List<VoteEntity> votes;
 
     @CreatedDate
@@ -52,5 +55,9 @@ public class UserEntity {
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public List<EventEntity> getEvents() {
+        return events;
     }
 }

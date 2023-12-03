@@ -1,5 +1,6 @@
 package combat.squad.user;
 
+import combat.squad.event.EventEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,11 @@ public class UserController {
     @GetMapping("{id}")
     public UserEntity getUserById(@PathVariable("id") Long id) {
         return this.userService.getUserById(id);
+    }
+
+    @GetMapping("{id}/events")
+    public List<EventEntity> getEventsByUserId(@PathVariable("id") Long id) {
+        return this.userService.getUserById(id).getEvents();
     }
 
     @PostMapping

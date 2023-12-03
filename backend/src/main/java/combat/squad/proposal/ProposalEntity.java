@@ -1,5 +1,7 @@
 package combat.squad.proposal;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import combat.squad.event.EventEntity;
 import combat.squad.user.UserEntity;
 import combat.squad.vote.VoteEntity;
@@ -22,12 +24,14 @@ public class ProposalEntity {
     private Date endDate;
 
     @ManyToOne
+    @JsonBackReference
     private EventEntity event;
 
     @CreatedDate
     private Date created;
 
     @OneToMany(mappedBy = "proposal")
+    @JsonManagedReference
     private List<VoteEntity> votes;
 
     public ProposalEntity(EventEntity event, Date startDate, Date endDate) {
