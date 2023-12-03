@@ -4,8 +4,27 @@ import combat.squad.proposal.ProposalDto;
 
 import java.util.Date;
 import java.util.List;
+import javax.validation.Valid;
+import javax.validation.constraints.*;
+public record EventDto(
+        @NotBlank(message = "Name cannot be blank")
+        String name,
 
-public record EventDto(String name, String description, Date finalDate, String location, Long creatorId, List<ProposalDto> eventProposals) {
+        @NotBlank(message = "Description cannot be blank")
+        String description,
+
+        ProposalDto finalProposal,
+
+        @NotBlank(message = "Location cannot be blank")
+        String location,
+
+        @NotNull(message = "Creator ID cannot be null")
+        Long creatorId,
+
+        @NotEmpty(message = "Event proposals cannot be empty")
+        List<@Valid ProposalDto> eventProposals
+) {
+
 
     @Override
     public String name() {
@@ -18,8 +37,8 @@ public record EventDto(String name, String description, Date finalDate, String l
     }
 
     @Override
-    public Date finalDate() {
-        return finalDate;
+    public ProposalDto finalProposal() {
+        return finalProposal;
     }
 
     @Override

@@ -29,14 +29,14 @@ public class EventController {
         return this.eventService.createEvent(eventDto);
     }
 
-//    @PutMapping
-//    public EventEntity updateEvent(@RequestBody EventEntity eventEntity) {
-//        return this.eventService.updateEvent(eventEntity);
-//    }
-//
-//    @DeleteMapping("{id}")
-//    public void deleteEvent(@PathVariable("id") Long id){
-//        this.eventService.deleteEvent(id);
-//    }
+    @PutMapping("{id}")
+    public EventEntity updateEvent(@PathVariable("id") Long id,@RequestBody EventDto eventDto) {
+        return this.eventService.updateEvent(id,eventDto);
+    }
+
+    @DeleteMapping("{id}")
+    public void deleteEvent(@PathVariable("id") Long id){
+        this.eventService.deleteEvent(id);
+    }
 
 }

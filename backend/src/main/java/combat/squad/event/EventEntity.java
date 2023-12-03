@@ -32,7 +32,8 @@ public class EventEntity {
         return created;
     }
 
-    private Date finalDate;
+    @OneToOne
+    private ProposalEntity finalProposal;
 
     private String location;
 
@@ -45,10 +46,10 @@ public class EventEntity {
     @CreatedDate
     private Date created;
 
-    public EventEntity(String name, String description, Date finalDate, String location, UserEntity creator, List<ProposalEntity> eventProposals) {
+    public EventEntity(String name, String description, ProposalEntity finalProposal,String location, UserEntity creator, List<ProposalEntity> eventProposals) {
         this.name = name;
         this.description = description;
-        this.finalDate = finalDate;
+        this.finalProposal = finalProposal;
         this.location = location;
         this.creator = creator;
         this.eventProposals = eventProposals;
@@ -78,12 +79,12 @@ public class EventEntity {
         this.description = description;
     }
 
-    public Date getFinalDate() {
-        return finalDate;
+    public ProposalEntity getFinalDate() {
+        return finalProposal;
     }
 
-    public void setFinalDate(Date finalDate) {
-        this.finalDate = finalDate;
+    public void setFinalProposal(ProposalEntity finalProposal) {
+        this.finalProposal = finalProposal;
     }
 
     public String getLocation() {

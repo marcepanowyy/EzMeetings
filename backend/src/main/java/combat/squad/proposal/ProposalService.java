@@ -10,16 +10,11 @@ import java.util.List;
 
 @Service
 public class ProposalService {
-
     private final ProposalRepository proposalRepository;
-
-//    private final EventService eventService;
     private final EventRepository eventRepository;
 
-//    public ProposalService(ProposalRepository proposalRepository, EventService eventService) {
     public ProposalService(ProposalRepository proposalRepository, EventRepository eventRepository) {
         this.proposalRepository = proposalRepository;
-//        this.eventService = eventService;
         this.eventRepository = eventRepository;
     }
 
@@ -32,8 +27,6 @@ public class ProposalService {
     }
 
     public ProposalEntity createProposal(ProposalDto proposalDTO, Long eventId){
-
-//        EventEntity event = this.eventService.getEventById(eventId);
         EventEntity event = this.eventRepository.findById(eventId).orElseThrow();
 
         ProposalEntity proposalEntity = new ProposalEntity(
@@ -42,10 +35,6 @@ public class ProposalService {
                 proposalDTO.endDate()
         );
 
-        return this.proposalRepository.save(proposalEntity);
-    }
-
-    public ProposalEntity updateProposal(ProposalEntity proposalEntity) {
         return this.proposalRepository.save(proposalEntity);
     }
 
