@@ -15,9 +15,12 @@ mogą jedynie zadeklarować swoją obecność w danym terminie lub też jej brak
 * Połączenie z bazą danych
 * Dodanie UI (Połączenie z Java FX)
 * Przeprowadzenie Unit Testów
-* Ustalenie GUI
 * Implementacja GUI
-* 
+* Autentykacja i autoryzacja
+* Wyświetlanie eventów
+* Sprawdzenie proposals (kliknięcie w event w celu poznania szczegółów)
+* Możliwość dodania eventu przez użytkownika (zalogowanego)
+* Oddanie głosu na daną propozycję (na podstawie id wydarzenia)
 
 
 ## Technologie i Frameworki
@@ -34,7 +37,10 @@ PostgreSQL <br>
 W celu uruchomienia aplikacji konieczne jest pobranie PostegreSQL. Polecamy przy okazji pobrać
 pgAdmina (może być także docker jednak nie zalecamy go przy systemie Windows). W razie problemów odsyłamy do [poradnika](https://www.youtube.com/watch?v=0n41UTkOBb0&ab_channel=GeekyScript).<br>
 
-W celu uruchomienia aplikacji musimy w pliku application.properties zmodyfikować linijki:
+
+### Backend
+Najpierw uruchomimy backend. W tym celu importujemy folder backend. (File -> Open -> pg-pn-1820-combatsquad\backend).
+Następnie musimy w pliku application.properties zmodyfikować linijki:
 spring.datasource.username,
 spring.datasource.password<br>
 podając odpowiadnio nazwę bazy danych i hasło.<br><br>
@@ -43,7 +49,11 @@ Jeśli korzystasz z pgAdmin to najprowdopodobniej będzie to wyglgądać następ
 spring.datasource.username=postgres
 spring.datasource.password="twoje hasło"
 ```
- Następnie powinniśy być w stanie odpalić projekt.
+ Teraz powinniśy być w stanie odpalić projekt.
+
+### Frontend
+W kolejnym oknie importujemy folder frontend (File -> Open -> pg-pn-1820-combatsquad\frontend),
+a następnie uruchamiamy projekt.
 
 ## Podstawowe jednostki:
 
@@ -77,7 +87,8 @@ public class EventEntity {
 
     private String description;
 
-    private Date finalDate;
+    @OneToOne
+    private ProposalEntity finalProposal;
 
     private String location;
 
@@ -94,7 +105,7 @@ public class EventEntity {
 ```
 Modyfikować dane wydarzenie, tzn. zmieniać nazwę, opis, dodawać nowe
 propozycje terminów może tylko creator (admin).<br>
-FinalDate jest to termin, który został ostatecznie wybrany jako
+FinalProposal jest to termin, który został ostatecznie wybrany jako
 termin wydarzenia przez admina.
 
 ### ProposalEntity
@@ -140,23 +151,3 @@ public class VoteEntity {
 ```
 Stan informuje nas o decyzji użytkownika. Wyróżniamy 3 podstawowe stany: present, absent, pending.<br>
 Stan pending otrzyma uczestnik, który wypelnił swoje preferencje przed dodaniem nowej propozycji terminu.
-
-
-
-
-
-# Pytania:
-* Czy admin moze zaprosic jakies osoby?? - czy przechowywać gdzieś informacje
-o wszystkich zaproszonych uczesnitakch?<br>
-* testing container? <br>
-
-# Do dodania:
-add dto + ro<br>
-add validation pipe<br>
-add dto + validations<br>
-add logging interceptor<br>
-add http error filter<br>
-testing CRUD METHODS????<br>
-add swagger api doc <br>
-
-auth??? oauth2.0?? + decorators & guards~~~~<br>
