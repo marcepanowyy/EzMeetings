@@ -29,12 +29,16 @@ public class ProposalService {
     public ProposalEntity createProposal(ProposalDto proposalDTO, Long eventId){
         EventEntity event = this.eventRepository.findById(eventId).orElseThrow();
 
+        for (ProposalEntity proposal : event.getProposals()) {
+            if (proposal.getStartDate().equals(proposalDTO.startDate()) || proposal.getEndDate().equals(proposalDTO.endDate())) {
+                throw new IllegalArgumentException("Event already has a proposal with this date");
+            }
+        }
         ProposalEntity proposalEntity = new ProposalEntity(
                 event,
                 proposalDTO.startDate(),
                 proposalDTO.endDate()
         );
-
         return this.proposalRepository.save(proposalEntity);
     }
 

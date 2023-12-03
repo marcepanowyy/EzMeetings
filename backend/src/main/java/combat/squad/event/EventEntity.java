@@ -102,4 +102,14 @@ public class EventEntity {
     public EventEntity() {
     }
 
+    public List<ProposalEntity> getProposals() {
+        return eventProposals;
+    }
+
+    public void setProposals(List<ProposalEntity> proposals) {
+        this.eventProposals = proposals;
+    }
+    public void addProposal(ProposalEntity proposal) {
+        this.eventProposals.add(proposal);
+    }
 }

@@ -89,7 +89,7 @@ public class ProposalServiceTest {
     }
 
     @Test
-    public void testCreateProposal() {
+    public void testCreateNormalProposal() {
         Long eventId = 1L;
         EventEntity event = new EventEntity("Event Name", "Event Description", null, "Location", null, Arrays.asList());
         when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
@@ -102,6 +102,23 @@ public class ProposalServiceTest {
         assertNotNull(result);
         verify(proposalRepository).save(any(ProposalEntity.class));
         verify(eventRepository).findById(eventId);
+    }
+
+    @Test
+    public void testCreateProposalWithSameDatesAsBefore() {
+        Long eventId = 1L;
+        Date startDate = startDates.get(1);
+        Date endDate = endDates.get(1);
+        EventEntity event = new EventEntity("Event Name", "Event Description", null, "Location", null, Arrays.asList());
+        ProposalEntity existingProposal = new ProposalEntity(event, startDate, endDate);
+        event.setProposals(List.of(existingProposal));
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+        when(proposalRepository.save(any(ProposalEntity.class))).thenReturn(existingProposal);
+        ProposalDto newProposalDto = new ProposalDto(startDate, endDate);
+        assertThrows(IllegalArgumentException.class, () -> {
+            proposalService.createProposal(newProposalDto, eventId);
+        });
+        verify(proposalRepository, never()).save(any(ProposalEntity.class));
     }
 
     @Test
