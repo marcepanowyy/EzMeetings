@@ -1,153 +1,84 @@
-# Projekt aplikacji Doodle
+## Projekt aplikacji Doodle
 
-## Opis projektu:
-Aplikacja służy do umawiania spotkań. <br> 
-Dowolny użytkownik może utworzyć spotkanie,
-staje się on wówczas jego adminem tzn. ma prawo ustawić lub edytować jego nazwę, opis oraz 
-podać możliwe terminy. Goście (pozostali użytkownicy) mający dostęp do danego spotkania,
-mogą jedynie zadeklarować swoją obecność w danym terminie lub też jej brak.
+### Opis projektu:
 
-# Plan działań:
-* Wybór frameworków
-* Ustalenie schemtu bazy danych
-* Ustalenie modelu aplikacji
-* Implementacja szkieletu aplikacji
-* Połączenie z bazą danych
-* Dodanie UI (Połączenie z Java FX)
-* Przeprowadzenie Unit Testów
-* Implementacja GUI
-* Autentykacja i autoryzacja
-* Wyświetlanie eventów
-* Sprawdzenie proposals (kliknięcie w event w celu poznania szczegółów)
-* Możliwość dodania eventu przez użytkownika (zalogowanego)
-* Oddanie głosu na daną propozycję (na podstawie id wydarzenia)
+Projekt zakłada stworzenie aplikacji w stylu Doodle, dedykowanej do organizacji wydarzeń i spotkań. 
+Główną funkcjonalnością będzie umożliwienie użytkownikom tworzenia wydarzeń z wieloma opcjami terminowymi. 
+Zaproszeni uczestnicy będą mieli możliwość głosowania na preferowane terminy, co pozwoli ustalić ostateczną i 
+odpowiednią dla wszystkich datę wydarzenia.
 
+### Plan działań:
+* Zaimplementowanie gui umozliwiajacego wyswietlanie wydarzeń stworzonych przez konkretnego użytkownika
+* Zaimplementowanie gui pozwalającego na przeglądanie dostępnych opcji terminowych dla danego wydarzenia 
+* Stworzenie w gui możliwości dodawania nowych wydarzeń przez użytkownika (początkowo niezalogowanego)
+* Zapewnienie prostego formularza umożliwiajacego okreslenie nazwy wydarzenia, jego opisu oraz opcji terminowych
+* Zapewnienie gui do zaznaczania preferowanych opcji terminowych przez użytkownika na konkretne wydarzenie
+* możliwość oddania głosu (vote) na konkretne wydarzenie przez użytkownika (początkowo niezalogowanego) w gui
+* Autoryzacja i atuentykacja na backendzie - jesli bedzie czas
+* Dodanie testów dla frontendu
 
-## Technologie i Frameworki
-### Frameworki:
+### Technologie
 
-JavaFX <br>
-JPA (Hibernate) <br>
-PostgreSQL <br>
+Spring Boot, JPA (Hibernate), PostreSQL - backend
+JavaFX - frontend
 
-### Model Diagram
-![db_diagram.jpg](db_diagram.jpg)
+### Schemat bazy danych
 
-## Uruchomienie aplikacji
-W celu uruchomienia aplikacji konieczne jest pobranie PostegreSQL. Polecamy przy okazji pobrać
-pgAdmina (może być także docker jednak nie zalecamy go przy systemie Windows). W razie problemów odsyłamy do [poradnika](https://www.youtube.com/watch?v=0n41UTkOBb0&ab_channel=GeekyScript).<br>
+![db_diagram.jpg](assets/db_diagram.png)
 
+### Uruchomienie aplikacji
 
-### Backend
-Najpierw uruchomimy backend. W tym celu importujemy folder backend. (File -> Open -> pg-pn-1820-combatsquad\backend).
-Następnie musimy w pliku application.properties zmodyfikować linijki:
-spring.datasource.username,
-spring.datasource.password<br>
-podając odpowiadnio nazwę bazy danych i hasło.<br><br>
-Jeśli korzystasz z pgAdmin to najprowdopodobniej będzie to wyglgądać następująco:
-```properties
-spring.datasource.username=postgres
-spring.datasource.password="twoje hasło"
-```
- Teraz powinniśy być w stanie odpalić projekt.
+#### Baza danych
 
-### Frontend
-W kolejnym oknie importujemy folder frontend (File -> Open -> pg-pn-1820-combatsquad\frontend),
-a następnie uruchamiamy projekt.
+Aby uruchomic aplikację należy najpierw postawić bazę danych. Proponujemy jeden z dwóch możliwych sposobów:
 
-## Podstawowe jednostki:
+1) Użycie dokeryzowanej bazy danych:
 
-### UserEntity
-```java
-@Entity
-@Table(name = "users")
-public class UserEntity {
-    ...
-    @Column(unique=true)
-    private String nickname;
+    Pobieramy obraz postgresa na lokalną maszynę:
+    
+    ```
+    docker pull postgres
+    ```
+    
+    Następnie uruchamiamy kontener wpisując odpowiednią nazwę użytkownika i hasło (może być ta co w przykładzie):
+    
+    ```
+    docker run -d --name postgres-1 -e POSTGRES_PASSWORD=password -e POSTGRES_USER=username -p 5432:5432 postgres
+    ```
+    
+    Możemy sprawdzić czy kontener działa poprawnie
+    
+    ```
+    docker ps
+    ```
+    
+    Należy pamiętać, aby w pliku application.properties zmienić dane logowania do bazy danych na te, które podaliśmy przy uruchamianiu kontenera.
+    
+    ```properties
+    spring.datasource.username=postgres
+    spring.datasource.password="twoje hasło"
+    ```
+    
+    Jeśli występują problemy, kierujemy do [oficjalnej dokumentacji](https://www.docker.com/blog/how-to-use-the-postgres-docker-official-image/) lub skorzystanie z drugiego sposobu
 
-    @OneToMany(mappedBy = "creator")
-    private List<EventEntity> events;
+<br>
 
-    @OneToMany(mappedBy = "voter")
-    private List<VoteEntity> votes;
-    ...
-}
-```
-W początkowym rozwoju aplikacji zakładamy, że będziemy identyfikować
-użytkownika po jego nazwie
+2) Pobranie PostgreSQL i użycie PgAdmina
 
-### EventEntity
-```java
-@Entity
-@Table(name = "events")
-public class EventEntity {
-    ...
-    private String name;
+    Pobieramy PostgreSQL oraz PgAdmina ze strony [oficjalnej strony](https://www.postgresql.org/download/).
+    
+    Analogicznie należy pamiętać o zmianie danych logowania w pliku application.properties.
+    
+    W razie problemów odsyłamy do [poradnika](https://www.youtube.com/watch?v=0n41UTkOBb0&ab_channel=GeekyScript)
 
-    private String description;
+#### Backend
 
-    @OneToOne
-    private ProposalEntity finalProposal;
+Importujemy folder backend do Intellij: File -> Open.. Czekamy, aż Gradle pobierze wszystkie zależności i 
+zbuduje projekt. Aby uruchomić aplikację korzystamy z polecenia "Run" na klasie CombatSquadApplication (zielona strzałka)
 
-    private String location;
+Aby przetestować działanie aplikacji korzystamy z test runnera (zielona strzałka obok nazwy klasy testowej)
 
-    @OneToMany(mappedBy = "event")
-    private List<ProposalEntity> eventProposals;
+#### Frontend
 
-    @ManyToOne
-    private UserEntity creator;
-
-    @CreatedDate
-    private Date created;
-    ...
-}
-```
-Modyfikować dane wydarzenie, tzn. zmieniać nazwę, opis, dodawać nowe
-propozycje terminów może tylko creator (admin).<br>
-FinalProposal jest to termin, który został ostatecznie wybrany jako
-termin wydarzenia przez admina.
-
-### ProposalEntity
-```java
-@Entity
-@Table(name="proposals")
-public class ProposalEntity {
-    ...
-    private Date startDate;
-    private Date endDate;
-
-    @ManyToOne
-    private EventEntity event;
-
-    @CreatedDate
-    private Date created;
-
-    @OneToMany(mappedBy = "proposal")
-    private List<VoteEntity> votes;
-    ...
-}
-```
-Klasa ta odpowiada za propozycje terminów wydarzenia danego eventu
-
-### VoteEntity
-```java
-@Entity
-@Table(name = "votes")
-public class VoteEntity {
-    ...
-    @ManyToOne
-    private UserEntity voter;
-
-    @ManyToOne
-    private ProposalEntity proposal;
-
-    @CreatedDate
-    private Date created;
-
-    private String state;
-    ...
-}
-```
-Stan informuje nas o decyzji użytkownika. Wyróżniamy 3 podstawowe stany: present, absent, pending.<br>
-Stan pending otrzyma uczestnik, który wypelnił swoje preferencje przed dodaniem nowej propozycji terminu.
+Analogicznie tak jak wyżej, tylko importujemy folder frontend. 
+Aby uruchomić aplikację korzystamy z polecenia "Run" na klasie Main (zielona strzałka).

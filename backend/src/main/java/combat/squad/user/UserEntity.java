@@ -22,12 +22,10 @@ public class UserEntity {
     @Column(unique=true)
     private String nickname;
 
-    @OneToMany(mappedBy = "creator")
-    @JsonManagedReference
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "creator")
     private List<EventEntity> events;
 
-    @OneToMany(mappedBy = "voter")
-    @JsonManagedReference
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "voter")
     private List<VoteEntity> votes;
 
     @CreatedDate

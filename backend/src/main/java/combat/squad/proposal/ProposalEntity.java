@@ -21,22 +21,20 @@ public class ProposalEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @FutureOrPresent(message = "Start date must be present or future date")
     private Date startDate;
 
     @FutureOrPresent(message = "End date must be present or future date")
     private Date endDate;
 
-    @ManyToOne
     @JsonBackReference
+    @ManyToOne
     private EventEntity event;
 
     @CreatedDate
     private Date created;
 
-    @OneToMany(mappedBy = "proposal")
-    @JsonManagedReference
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "proposal")
     private List<VoteEntity> votes;
 
     public ProposalEntity(EventEntity event, Date startDate, Date endDate) {

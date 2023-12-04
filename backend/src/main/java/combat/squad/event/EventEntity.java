@@ -39,8 +39,8 @@ public class EventEntity {
 
     private String location;
 
-    @OneToMany(mappedBy = "event")
     @JsonManagedReference
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "event")
     private List<ProposalEntity> eventProposals;
 
     @ManyToOne
