@@ -1,26 +1,41 @@
 package combat.squad.user;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import combat.squad.event.EventEntity;
-import combat.squad.proposal.ProposalEntity;
 import combat.squad.vote.VoteEntity;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
+
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "users")
 public class UserEntity {
 
+    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    private UUID id;
 
     @Column(unique=true)
-    private String nickname;
+    private String email;
+
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private String password;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "creator")
     private List<EventEntity> events;
@@ -31,31 +46,38 @@ public class UserEntity {
     @CreatedDate
     private Date created;
 
-    public UserEntity(String nickname){
-        this.nickname = nickname;
+    public UserEntity(String email, String password) {
+        this.email = email;
+        setPassword(password);
         this.events = new ArrayList<>();
         this.votes = new ArrayList<>();
     }
 
-    public UserEntity(){}
-
-    public Long getId() {
-        return id;
+    public void setPassword(String password) {
+        this.password = passwordEncoder.encode(password);
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    boolean comparePassword(String attempt){
+        return passwordEncoder.matches(attempt, this.password);
     }
 
-    public String getNickname() {
-        return nickname;
+    private String generateToken() {
+
+        Date expirationDate = new Date(System.currentTimeMillis() + (7 * 24 * 60 * 60 * 1000)); // 7 days
+
+        return Jwts.builder()
+                .setSubject(this.email)
+                .claim("id", this.id)
+                .claim("username", this.email)
+                .setExpiration(expirationDate)
+                .signWith(SignatureAlgorithm.HS256, "rememberToAddThisToEnvFile")
+                .compact();
     }
 
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
+    public UserRo toUserRo(boolean showToken) {
+        Optional<String> token = showToken ? Optional.ofNullable(generateToken()) : Optional.empty();
+        return new UserRo(this.id, this.email, this.events, token, this.created);
     }
 
-    public List<EventEntity> getEvents() {
-        return events;
-    }
+
 }

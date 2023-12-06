@@ -4,25 +4,27 @@ import combat.squad.proposal.ProposalDto;
 import combat.squad.proposal.ProposalEntity;
 import combat.squad.proposal.ProposalService;
 import combat.squad.user.UserEntity;
+import combat.squad.user.UserRepository;
 import combat.squad.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class EventService {
 
     private final EventRepository eventRepository;
+    private final UserRepository userRepository;
 
-    private final UserService userService;
     private final ProposalService proposalService;
 
     @Autowired
-    public EventService(EventRepository eventRepository, UserService userService, ProposalService proposalService) {
+    public EventService(EventRepository eventRepository, UserRepository userRepository, ProposalService proposalService) {
         this.eventRepository = eventRepository;
-        this.userService = userService;
+        this.userRepository = userRepository;
         this.proposalService = proposalService;
     }
 
@@ -36,8 +38,8 @@ public class EventService {
 
     public EventEntity createEvent(EventDto eventDto) {
 
-        Long userId = eventDto.creatorId();
-        UserEntity user = this.userService.getUserById(userId);
+        UUID userId = eventDto.creatorId();
+        UserEntity user = this.userRepository.findById(userId).orElseThrow();
 
         EventEntity eventEntity = new EventEntity(
                 eventDto.name(),

@@ -24,12 +24,4 @@ public record ProposalDto(
             );
     }
 
-    @Override
-    public Date startDate() {
-        return startDate;
-    }
-    @Override
-    public Date endDate() {
-        return endDate;
-    }
 }

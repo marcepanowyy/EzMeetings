@@ -4,6 +4,7 @@ import combat.squad.event.EventEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/user")
@@ -16,24 +17,24 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserEntity> getUsers() {
-        return this.userService.getUsers();
+    public List<UserRo> getAllUsers() {
+        return this.userService.getAllUsers();
     }
 
     @GetMapping("{id}")
-    public UserEntity getUserById(@PathVariable("id") Long id) {
+    public UserRo getUserById(@PathVariable("id") UUID id) {
         return this.userService.getUserById(id);
     }
 
-    @GetMapping("{id}/events")
-    public List<EventEntity> getEventsByUserId(@PathVariable("id") Long id) {
-        return this.userService.getUserById(id).getEvents();
-    }
-
     @PostMapping
-    public UserEntity createUser(@RequestBody UserDto userDto) {
+    public UserRo register(@RequestBody UserDto userDto) {
         return this.userService.createUser(userDto);
     }
+
+//    @GetMapping("{id}/events")
+//    public List<EventEntity> getEventsByUserId(@PathVariable("id") UUID id) {
+//        return this.userService.getUserById(id).getEvents();
+//    }
 
 //    @PutMapping
 //    public UserEntity updateUser(@RequestBody UserEntity userEntity) {

@@ -10,4 +10,5 @@ public class CombatSquadProjectApplication {
 		SpringApplication.run(CombatSquadProjectApplication.class, args);
 	}
 
+
 }
