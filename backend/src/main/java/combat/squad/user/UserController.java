@@ -1,8 +1,8 @@
 package combat.squad.user;
 
-import combat.squad.event.EventEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,12 +22,12 @@ public class UserController {
     }
 
     @GetMapping("{id}")
-    public UserRo getUserById(@PathVariable("id") UUID id) {
+    public UserEntity getUserById(@PathVariable("id") UUID id) {
         return this.userService.getUserById(id);
     }
 
     @PostMapping
-    public UserRo register(@RequestBody UserDto userDto) {
+    public UserRo register(@Valid @RequestBody UserDto userDto) {
         return this.userService.createUser(userDto);
     }
 

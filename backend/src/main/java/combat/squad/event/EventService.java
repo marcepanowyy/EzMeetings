@@ -32,7 +32,7 @@ public class EventService {
         return this.eventRepository.findAll();
     }
 
-    public EventEntity getEventById(Long id) {
+    public EventEntity getEventById(UUID id) {
         return this.eventRepository.findById(id).orElseThrow();
     }
 
@@ -66,16 +66,16 @@ public class EventService {
         return this.eventRepository.save(eventEntity);
     }
 
-    public EventEntity updateEvent(Long id, EventDto eventDto) {
-        EventEntity event = this.eventRepository.findById(id).orElseThrow();
-        event.setName(eventDto.name());
-        event.setDescription(eventDto.description());
-        event.setLocation(eventDto.location());
-        return this.eventRepository.save(event);
-    }
-
-    public void deleteEvent(Long id) {
-        this.eventRepository.deleteById(id);
-    }
+//    public EventEntity updateEvent(UUID id, EventDto eventDto) {
+//        EventEntity event = this.eventRepository.findById(id).orElseThrow();
+//        event.setName(eventDto.name());
+//        event.setDescription(eventDto.description());
+//        event.setLocation(eventDto.location());
+//        return this.eventRepository.save(event);
+//    }
+//
+//    public void deleteEvent(UUID id) {
+//        this.eventRepository.deleteById(id);
+//    }
 
 }

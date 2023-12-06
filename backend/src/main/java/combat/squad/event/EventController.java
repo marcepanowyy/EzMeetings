@@ -3,6 +3,7 @@ package combat.squad.event;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/event")
@@ -20,7 +21,7 @@ public class EventController {
     }
 
     @GetMapping("{id}")
-    public EventEntity getEventById(@PathVariable("id") Long id) {
+    public EventEntity getEventById(@PathVariable("id") UUID id) {
         return this.eventService.getEventById(id);
     }
 
@@ -29,14 +30,14 @@ public class EventController {
         return this.eventService.createEvent(eventDto);
     }
 
-    @PutMapping("{id}")
-    public EventEntity updateEvent(@PathVariable("id") Long id,@RequestBody EventDto eventDto) {
-        return this.eventService.updateEvent(id,eventDto);
-    }
-
-    @DeleteMapping("{id}")
-    public void deleteEvent(@PathVariable("id") Long id){
-        this.eventService.deleteEvent(id);
-    }
+//    @PutMapping("{id}")
+//    public EventEntity updateEvent(@PathVariable("id") UUID id,@RequestBody EventDto eventDto) {
+//        return this.eventService.updateEvent(id,eventDto);
+//    }
+//
+//    @DeleteMapping("{id}")
+//    public void deleteEvent(@PathVariable("id") UUID id){
+//        this.eventService.deleteEvent(id);
+//    }
 
 }

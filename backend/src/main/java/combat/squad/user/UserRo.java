@@ -11,7 +11,7 @@ import java.util.Optional;
 public record UserRo(
         UUID id,
         String email,
-        List<EventEntity> eventEntityList,
+        List<EventEntity> eventList,
         Optional<String> token,
         Date created
 ) {

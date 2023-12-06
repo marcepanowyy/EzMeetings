@@ -5,21 +5,33 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import combat.squad.event.EventEntity;
 import combat.squad.user.UserEntity;
 import combat.squad.vote.VoteEntity;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.FutureOrPresent;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
+@Data
+@NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 @Table(name="proposals")
 public class ProposalEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    private UUID id;
 
     @FutureOrPresent(message = "Start date must be present or future date")
     private Date startDate;
@@ -45,33 +57,6 @@ public class ProposalEntity {
         this.endDate = endDate;
         this.event = event;
         this.votes = new ArrayList<>();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
-
-    public ProposalEntity() {
     }
 
 }

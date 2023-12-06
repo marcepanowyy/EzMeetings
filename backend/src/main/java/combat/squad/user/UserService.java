@@ -28,8 +28,8 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public UserRo getUserById(UUID id) {
-        return this.userRepository.findById(id).orElseThrow().toUserRo(false);
+    public UserEntity getUserById(UUID id) {
+        return this.userRepository.findById(id).orElseThrow();
     }
 
     public UserRo createUser(UserDto userDto) {

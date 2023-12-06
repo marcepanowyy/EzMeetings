@@ -7,6 +7,7 @@ import combat.squad.user.UserService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class VoteService {
@@ -30,7 +31,7 @@ public class VoteService {
         return this.voteRepository.findById(id).orElseThrow();
     }
 
-    public VoteEntity createVote(VoteDto voteDTO) {
+    public VoteEntity createVote(VoteDto voteDto) {
 
         // check if user was invited to event
 
@@ -38,16 +39,16 @@ public class VoteService {
 
         // + check if user already voted
 
-        Long voterId = voteDTO.voterId();
+        UUID voterId = voteDto.voterId();
         UserEntity voter = this.userService.getUserById(voterId);
 
-        Long proposalId = voteDTO.proposalId();
+        UUID proposalId = voteDto.proposalId();
         ProposalEntity proposal = this.proposalService.getProposalById(proposalId);
 
         VoteEntity voteEntity = new VoteEntity(
                 voter,
                 proposal,
-                voteDTO.state()
+                voteDto.state()
         );
         return this.voteRepository.save(voteEntity);
     }

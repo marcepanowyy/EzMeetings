@@ -4,19 +4,21 @@ import combat.squad.event.EventEntity;
 import combat.squad.vote.VoteEntity;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import java.util.*;
 
-
+@Entity
 @Data
 @NoArgsConstructor
-@Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "users")
 public class UserEntity {
 
@@ -33,7 +35,7 @@ public class UserEntity {
     @Column(unique=true)
     private String email;
 
-    @Getter(AccessLevel.NONE)
+    @Getter(AccessLevel.NONE) // safety reason :)
     @Setter(AccessLevel.NONE)
     private String password;
 
@@ -62,7 +64,6 @@ public class UserEntity {
     }
 
     private String generateToken() {
-
         Date expirationDate = new Date(System.currentTimeMillis() + (7 * 24 * 60 * 60 * 1000)); // 7 days
 
         return Jwts.builder()
@@ -70,7 +71,7 @@ public class UserEntity {
                 .claim("id", this.id)
                 .claim("username", this.email)
                 .setExpiration(expirationDate)
-                .signWith(SignatureAlgorithm.HS256, "rememberToAddThisToEnvFile")
+                .signWith(SignatureAlgorithm.HS256, Keys.secretKeyFor(SignatureAlgorithm.HS256))
                 .compact();
     }
 

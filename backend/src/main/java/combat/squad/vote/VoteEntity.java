@@ -2,12 +2,18 @@ package combat.squad.vote;
 
 import combat.squad.proposal.ProposalEntity;
 import combat.squad.user.UserEntity;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
+@Data
+@NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "votes")
 public class VoteEntity {
 
@@ -32,38 +38,4 @@ public class VoteEntity {
         this.state = state;
     }
 
-    public VoteEntity() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public UserEntity getVoter() {
-        return voter;
-    }
-
-    public void setVoter(UserEntity voter) {
-        this.voter = voter;
-    }
-
-    public ProposalEntity getProposal() {
-        return proposal;
-    }
-
-    public void setProposal(ProposalEntity proposal) {
-        this.proposal = proposal;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
 }
