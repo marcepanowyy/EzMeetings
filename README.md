@@ -102,5 +102,5 @@ Podstawowe routy:
 * /events - lista wydarzeń (dostępna po zalogowaniu) z możliwością zarządzania nimi
 * /events/:id - szczegóły wydarzenia (dostępna dla wszystkich)
 * /events/:id/edit - edycja wydarzenia (dostępna dla twórcy wydarzenia)
-* /events/new- głosowanie na wydarzenie (dostępna dla wszystkich)
+* /events/new- tworzenie wydarzenia (dostępna po zalogowaniu)
 
