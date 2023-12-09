@@ -41,7 +41,7 @@ public class ProposalEntity {
     @CreatedDate
     private Date created;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "proposal")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "proposal", fetch = FetchType.EAGER)
     private List<VoteEntity> votes;
 
     public ProposalEntity(EventEntity event, Date startDate) {

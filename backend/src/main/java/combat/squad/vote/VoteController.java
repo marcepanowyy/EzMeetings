@@ -1,5 +1,7 @@
 package combat.squad.vote;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,28 +17,17 @@ public class VoteController {
     }
 
     @GetMapping
-    public List<VoteEntity> getVotes() {
+    public List<VoteRo> getVotes() {
         return this.voteService.getVotes();
     }
 
-    @GetMapping("{id}")
-    public VoteEntity getVoteById(@PathVariable("id") Long id) {
-        return this.voteService.getVoteById(id);
-    }
+    // todo - check if dto is valid
 
     @PostMapping
-    public VoteEntity createVote(@RequestBody VoteDto voteDTO) {
-        return this.voteService.createVote(voteDTO);
+    public List<VoteRo> vote(@RequestBody List<VoteDto> voteDtos) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return this.voteService.vote(authentication.getName(), voteDtos);
     }
 
-//    @PutMapping
-//    public VoteEntity updateVote(@RequestBody VoteEntity voteEntity) {
-//        return this.voteService.updateVote(voteEntity);
-//    }
-
-//    @DeleteMapping("{id}")
-//    public void deleteVote(@PathVariable("id") Long id){
-//        this.voteService.deleteVote(id);
-//    }
 
 }

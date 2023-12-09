@@ -16,15 +16,17 @@ public class ProposalController {
         this.proposalService = proposalService;
     }
 
-//    @GetMapping
-//    public List<ProposalEntity> getProposals() {
-//        return this.proposalService.getProposals();
-//    }
-//
-//    @GetMapping("{id}")
-//    public ProposalEntity getProposalById(@PathVariable("id") UUID id) {
-//        return this.proposalService.getProposalById(id);
-//    }
+    @GetMapping
+    public List<ProposalRo> getProposals() {
+        return this.proposalService.getProposals();
+    }
+
+    // check all the votes for a proposal
+
+    @GetMapping("{id}")
+    public ProposalRo getProposalById(@PathVariable("id") UUID id) {
+        return this.proposalService.getProposalById(id);
+    }
 //
 //    @PostMapping("{eventId}")
 //    public ProposalEntity createProposal(@RequestBody ProposalDto proposalDTO, @PathVariable("eventId") UUID eventId) {

@@ -1,30 +1,16 @@
 package combat.squad.vote;
 
 import java.util.Date;
+import java.util.UUID;
 
-public record VoteRo(Long voteId, String voterNickname, Date startDate, Date endDate, String state) {
-    @Override
-    public Long voteId() {
-        return voteId;
-    }
+public record VoteRo(
 
-    @Override
-    public String voterNickname() {
-        return voterNickname;
-    }
+        UUID voteId,
+        UUID voterId,
+        String voterEmail,
+        State state,
+        Date created
 
-    @Override
-    public Date startDate() {
-        return startDate;
-    }
+) {
 
-    @Override
-    public Date endDate() {
-        return endDate;
-    }
-
-    @Override
-    public String state() {
-        return state;
-    }
 }

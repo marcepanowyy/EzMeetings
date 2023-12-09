@@ -3,28 +3,36 @@ package combat.squad.proposal;
 import combat.squad.event.EventEntity;
 import combat.squad.event.EventRepository;
 import combat.squad.event.EventService;
+import combat.squad.vote.VoteService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ProposalService {
+
     private final ProposalRepository proposalRepository;
     private final EventRepository eventRepository;
+    private final VoteService voteService;
 
-    public ProposalService(ProposalRepository proposalRepository, EventRepository eventRepository) {
+    public ProposalService(ProposalRepository proposalRepository, EventRepository eventRepository, VoteService voteService) {
         this.proposalRepository = proposalRepository;
         this.eventRepository = eventRepository;
+        this.voteService = voteService;
     }
 
-    public List<ProposalEntity> getProposals() {
-        return this.proposalRepository.findAll();
+    public List<ProposalRo> getProposals() {
+        return this.proposalRepository.findAll().stream().map(this::toProposalRo).toList();
     }
 
-    public ProposalEntity getProposalById(UUID id) {
-        return this.proposalRepository.findById(id).orElseThrow();
+    public ProposalRo getProposalById(UUID id) {
+
+        ProposalEntity proposal = this.proposalRepository.findById(id).orElseThrow();
+        return this.toProposalRo(proposal);
+
     }
 
     public ProposalEntity createProposal(ProposalDto proposalDTO, UUID eventId){
@@ -39,15 +47,14 @@ public class ProposalService {
         return this.proposalRepository.save(proposalEntity);
     }
 
-//    public void deleteProposal(UUID id) {
-//        this.proposalRepository.deleteById(id);
-//    }
+    public ProposalRo toProposalRo(ProposalEntity proposal) {
 
-    public ProposalRo toProposalRo(ProposalEntity proposalEntity) {
         return new ProposalRo(
-                proposalEntity.getId(),
-                proposalEntity.getStartDate()
+                proposal.getId(),
+                proposal.getStartDate(),
+                proposal.getVotes().stream().map(voteService::toVoteRo).toList()
         );
+
     }
 
 }

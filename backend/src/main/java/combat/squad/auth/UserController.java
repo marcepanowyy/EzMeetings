@@ -16,22 +16,22 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping() // only admin can access this endpoint
+    @GetMapping()
     public List<UserRo> getAllUsers() {
         return this.userService.getAllUsers();
     }
 
-    @GetMapping("{id}") // only admin can access this endpoint
+    @GetMapping("{id}")
     public UserEntity getUserById(@PathVariable("id") UUID id) {
         return this.userService.getUserById(id);
     }
 
-    @PostMapping("/register") // available for everyone
+    @PostMapping("/register")
     public UserRo register(@Valid @RequestBody UserDto userDto) {
         return this.userService.register(userDto);
     }
 
-    @PostMapping("/login") // available for everyone
+    @PostMapping("/login")
     public UserRo login(@RequestBody UserDto userDto) {   // don't have to check validation here
         return this.userService.login(userDto);
     }

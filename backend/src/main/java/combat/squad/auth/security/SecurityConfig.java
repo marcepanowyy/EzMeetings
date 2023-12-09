@@ -25,14 +25,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-
         http
                 .cors()
                 .and()
                 .csrf()
                 .disable()
                 .authorizeRequests()
-                .antMatchers("/auth/register", "/auth/login").permitAll() // permit all for register and login
+                .antMatchers("/auth/register", "/auth/login", "/proposal/**", "/vote/**", "/event/**", "/auth/**").permitAll()
                 .antMatchers("/auth/**", "/event").hasRole("ADMIN")
                 .anyRequest()
                 .authenticated()

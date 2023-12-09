@@ -17,24 +17,24 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    @GetMapping // only admin can access this endpoint
-    public List<EventEntity> getEvents() {
+    @GetMapping
+    public List<EventRo> getEvents() {
         return this.eventService.getEvents();
     }
 
-    @GetMapping("{id}") // only logged in users can access this endpoint
-    public EventRo getEventById(@PathVariable("id") UUID eventId) {
+    @GetMapping("{id}")
+    public EventRo getEventDetailsById(@PathVariable("id") UUID eventId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return this.eventService.getEventDetails(authentication.getName(), eventId);
     }
 
-    @GetMapping("/user") // only logged in users can access this endpoint
+    @GetMapping("/user")
     public List<EventRo> getEventsByUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return this.eventService.getEventsByUser(authentication.getName());
     }
 
-    @PostMapping ("/user")// only logged in users can access this endpoint
+    @PostMapping ("/user")
     public EventRo createEvent(@RequestBody EventDto eventDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return this.eventService.createEvent(authentication.getName(), eventDto);

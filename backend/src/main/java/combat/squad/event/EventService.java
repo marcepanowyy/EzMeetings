@@ -31,26 +31,25 @@ public class EventService {
         this.proposalService = proposalService;
     }
 
-    public List<EventEntity> getEvents() {
-        return this.eventRepository.findAll();
+    public List<EventRo> getEvents() {
+        return this.eventRepository.findAll().stream()
+                .map(event -> toEventRo(event, false))
+                .collect(Collectors.toList());
     }
 
     public EventEntity getEventById(UUID id) {
         return this.eventRepository.findById(id).orElseThrow();
     }
 
-
     public EventRo getEventDetails(String userEmail, UUID eventId) {
 
-        UserEntity user = this.userRepository.findByEmail(userEmail);
+//         TODO check if user is a creator of this event or a participant
 
-        if (user == null) {
-            throw new IllegalArgumentException("User not found");
-        }
-
-        if (user.getEvents().stream().noneMatch(event -> event.getId().equals(eventId))) {
-            throw new IllegalArgumentException("User is not a participant of this event");
-        }
+//        UserEntity user = this.userRepository.findByEmail(userEmail);
+//
+//        if (user == null) {
+//            throw new IllegalArgumentException("User not found");
+//        }
 
         EventEntity event = this.eventRepository.findById(eventId).orElseThrow();
 
@@ -66,7 +65,7 @@ public class EventService {
             throw new IllegalArgumentException("User not found");
         }
 
-        return user.getEvents().stream()
+        return user.getCreatedEvents().stream()
                 .map(event -> toEventRo(event, false))
                 .collect(Collectors.toList());
     }

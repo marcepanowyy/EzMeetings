@@ -46,7 +46,7 @@ public class UserEntity implements UserDetails {
     private String password;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "creator")
-    private List<EventEntity> events;
+    private List<EventEntity> createdEvents;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "voter")
     private List<VoteEntity> votes;
@@ -60,7 +60,7 @@ public class UserEntity implements UserDetails {
     public UserEntity(String email, String password) {
         this.email = email;
         setPassword(password);
-        this.events = new ArrayList<>();
+        this.createdEvents = new ArrayList<>();
         this.votes = new ArrayList<>();
         this.role = Role.USER;
     }
@@ -75,7 +75,7 @@ public class UserEntity implements UserDetails {
 
     public UserRo toUserRo(boolean showToken) {
         Optional<String> token = showToken ? Optional.ofNullable(jwtTokenProvider.generateToken(this)) : Optional.empty();
-        return new UserRo(this.id, this.email, this.events, token, this.created);
+        return new UserRo(this.id, this.email, this.createdEvents, token, this.created);
     }
 
     @Override
