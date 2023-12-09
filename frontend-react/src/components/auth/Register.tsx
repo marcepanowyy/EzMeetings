@@ -4,6 +4,8 @@ import { emailValidator, passwordValidator } from "../../utils/validators";
 
 import useInput from "../../utils/use-input"; 
 import {Link} from 'react-router-dom';
+import { RegisterRequest } from "../../models/api.models";
+import { register } from "../../utils/http";
 const Register: React.FC = () => {
   const {
     value: emailValue,
@@ -32,13 +34,20 @@ const Register: React.FC = () => {
     reset: resetConfirmPassword,
   } = useInput((value: String) => value === passwordValue);
 
-  const formSubmitHandler = (event: React.FormEvent) => {
+  const formSubmitHandler = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!emailIsValid || !passwordIsValid || !confirmPasswordIsValid) {
       return;
     }
-    // Submit form logic here
-    console.log(emailValue, passwordValue);
+    const registerDetails: RegisterRequest = {
+      email: emailValue,
+      password: passwordValue,
+    };
+    try {
+      await register(registerDetails);
+    } catch (error) {
+      console.error("Login error:", error);
+    }
     resetEmail();
     resetPassword();
     resetConfirmPassword();
