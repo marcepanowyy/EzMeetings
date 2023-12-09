@@ -82,3 +82,25 @@ Aby przetestować działanie aplikacji korzystamy z test runnera (zielona strza�
 
 Analogicznie tak jak wyżej, tylko importujemy folder frontend. 
 Aby uruchomić aplikację korzystamy z polecenia "Run" na klasie Main (zielona strzałka).
+
+#### Frontend w  ReactJS
+
+Aby włączyć projekt należy wejść do folderu frontend-react, a następnie wpisać :
+```
+npm install
+```
+Pozwoli to załadować wszystkie potrzebne biblioteki. Następnie wpisujemy:
+```
+npm start
+```
+Aplikacja powinna się uruchomić na porcie 3000.
+Proszę wpisać w przeglądarce adres: http://localhost:3000/
+
+Podstawowe routy:
+* /login - logowanie
+* /register - rejestracja
+* /events - lista wydarzeń (dostępna po zalogowaniu) z możliwością zarządzania nimi
+* /events/:id - szczegóły wydarzenia (dostępna dla wszystkich)
+* /events/:id/edit - edycja wydarzenia (dostępna dla twórcy wydarzenia)
+* /events/new- tworzenie wydarzenia (dostępna po zalogowaniu)
+
