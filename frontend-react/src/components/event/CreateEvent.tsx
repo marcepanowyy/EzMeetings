@@ -3,7 +3,7 @@ import { Calendar, momentLocalizer, SlotInfo, Event as CalendarEvent } from 'rea
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import styles from './CreateEvent.module.css';
-import Proposal from '../../models/Proposal';
+import Proposal from '../../models/proposal.model';
 
 
 const localizer = momentLocalizer(moment);
