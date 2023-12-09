@@ -1,7 +1,7 @@
 package combat.squad.vote;
 
 import combat.squad.proposal.ProposalEntity;
-import combat.squad.user.UserEntity;
+import combat.squad.auth.UserEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;

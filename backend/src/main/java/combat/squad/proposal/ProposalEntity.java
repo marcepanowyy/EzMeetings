@@ -1,9 +1,7 @@
 package combat.squad.proposal;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import combat.squad.event.EventEntity;
-import combat.squad.user.UserEntity;
 import combat.squad.vote.VoteEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -36,9 +34,6 @@ public class ProposalEntity {
     @FutureOrPresent(message = "Start date must be present or future date")
     private Date startDate;
 
-    @FutureOrPresent(message = "End date must be present or future date")
-    private Date endDate;
-
     @JsonBackReference
     @ManyToOne
     private EventEntity event;
@@ -49,12 +44,8 @@ public class ProposalEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "proposal")
     private List<VoteEntity> votes;
 
-    public ProposalEntity(EventEntity event, Date startDate, Date endDate) {
-        if (startDate != null && endDate != null && startDate.after(endDate)) {
-            throw new IllegalArgumentException("Start date must be before end date");
-        }
+    public ProposalEntity(EventEntity event, Date startDate) {
         this.startDate = startDate;
-        this.endDate = endDate;
         this.event = event;
         this.votes = new ArrayList<>();
     }

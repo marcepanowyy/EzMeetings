@@ -2,8 +2,8 @@ package combat.squad.vote;
 
 import combat.squad.proposal.ProposalEntity;
 import combat.squad.proposal.ProposalService;
-import combat.squad.user.UserEntity;
-import combat.squad.user.UserService;
+import combat.squad.auth.UserEntity;
+import combat.squad.auth.UserService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

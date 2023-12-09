@@ -1,4 +1,4 @@
-package combat.squad.user;
+package combat.squad.auth;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -9,6 +9,5 @@ import java.util.UUID;
 public interface UserRepository extends JpaRepository<UserEntity, UUID> {
 
     UserEntity findByEmail(String email);
-
 
 }

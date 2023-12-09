@@ -1,4 +1,4 @@
-package combat.squad.user;
+package combat.squad.auth;
 
 import combat.squad.event.EventEntity;
 

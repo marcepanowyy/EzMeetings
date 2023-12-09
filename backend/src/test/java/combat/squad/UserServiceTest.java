@@ -6,16 +6,16 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import combat.squad.user.UserDto;
+import combat.squad.auth.UserDto;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import combat.squad.user.UserEntity;
-import combat.squad.user.UserRepository;
-import combat.squad.user.UserService;
+import combat.squad.auth.UserEntity;
+import combat.squad.auth.UserRepository;
+import combat.squad.auth.UserService;
 
 import java.util.Arrays;
 import java.util.List;

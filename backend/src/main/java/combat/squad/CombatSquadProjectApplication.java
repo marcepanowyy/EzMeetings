@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @EnableJpaAuditing // enables @CreatedDate and @LastModifiedDate
-@SpringBootApplication(exclude = {SecurityAutoConfiguration.class })
+@SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
 public class CombatSquadProjectApplication {
 
 	public static void main(String[] args) {

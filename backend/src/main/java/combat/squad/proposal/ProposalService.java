@@ -28,18 +28,14 @@ public class ProposalService {
     }
 
     public ProposalEntity createProposal(ProposalDto proposalDTO, UUID eventId){
+
         EventEntity event = this.eventRepository.findById(eventId).orElseThrow();
 
-        for (ProposalEntity proposal : event.getEventProposals()) {
-            if (proposal.getStartDate().equals(proposalDTO.startDate()) || proposal.getEndDate().equals(proposalDTO.endDate())) {
-                throw new IllegalArgumentException("Event already has a proposal with this date");
-            }
-        }
         ProposalEntity proposalEntity = new ProposalEntity(
                 event,
-                proposalDTO.startDate(),
-                proposalDTO.endDate()
+                proposalDTO.startDate()
         );
+
         return this.proposalRepository.save(proposalEntity);
     }
 
@@ -47,4 +43,12 @@ public class ProposalService {
 //        this.proposalRepository.deleteById(id);
 //    }
 
+    public ProposalRo toProposalRo(ProposalEntity proposalEntity) {
+        return new ProposalRo(
+                proposalEntity.getId(),
+                proposalEntity.getStartDate()
+        );
+    }
+
 }
+

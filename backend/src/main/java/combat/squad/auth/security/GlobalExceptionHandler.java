@@ -1,4 +1,4 @@
-package combat.squad.config.exception;
+package combat.squad.auth.security;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.http.HttpStatus;

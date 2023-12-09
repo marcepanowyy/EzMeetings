@@ -1,4 +1,4 @@
-package combat.squad.user;
+package combat.squad.auth;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;

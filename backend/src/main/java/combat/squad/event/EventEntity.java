@@ -3,7 +3,7 @@ package combat.squad.event;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import combat.squad.proposal.ProposalEntity;
-import combat.squad.user.UserEntity;
+import combat.squad.auth.UserEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
@@ -40,7 +40,7 @@ public class EventEntity {
     private String location;
 
     @JsonManagedReference
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "event")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "event")
     private List<ProposalEntity> eventProposals;
 
     @ManyToOne

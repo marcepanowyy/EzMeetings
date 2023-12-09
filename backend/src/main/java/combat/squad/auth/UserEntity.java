@@ -1,5 +1,6 @@
-package combat.squad.user;
+package combat.squad.auth;
 
+import combat.squad.auth.security.JwtTokenProvider;
 import combat.squad.event.EventEntity;
 import combat.squad.vote.VoteEntity;
 import io.jsonwebtoken.Jwts;
@@ -7,10 +8,16 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.util.*;
@@ -20,9 +27,10 @@ import java.util.*;
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "users")
-public class UserEntity {
+public class UserEntity implements UserDetails {
 
     private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private static JwtTokenProvider jwtTokenProvider = new JwtTokenProvider();
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -35,11 +43,9 @@ public class UserEntity {
     @Column(unique=true)
     private String email;
 
-    @Getter(AccessLevel.NONE) // safety reason :)
-    @Setter(AccessLevel.NONE)
     private String password;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "creator")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "creator")
     private List<EventEntity> events;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "voter")
@@ -48,11 +54,15 @@ public class UserEntity {
     @CreatedDate
     private Date created;
 
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     public UserEntity(String email, String password) {
         this.email = email;
         setPassword(password);
         this.events = new ArrayList<>();
         this.votes = new ArrayList<>();
+        this.role = Role.USER;
     }
 
     public void setPassword(String password) {
@@ -63,22 +73,42 @@ public class UserEntity {
         return passwordEncoder.matches(attempt, this.password);
     }
 
-    private String generateToken() {
-        Date expirationDate = new Date(System.currentTimeMillis() + (7 * 24 * 60 * 60 * 1000)); // 7 days
-
-        return Jwts.builder()
-                .setSubject(this.email)
-                .claim("id", this.id)
-                .claim("username", this.email)
-                .setExpiration(expirationDate)
-                .signWith(SignatureAlgorithm.HS256, Keys.secretKeyFor(SignatureAlgorithm.HS256))
-                .compact();
-    }
-
     public UserRo toUserRo(boolean showToken) {
-        Optional<String> token = showToken ? Optional.ofNullable(generateToken()) : Optional.empty();
+        Optional<String> token = showToken ? Optional.ofNullable(jwtTokenProvider.generateToken(this)) : Optional.empty();
         return new UserRo(this.id, this.email, this.events, token, this.created);
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {return List.of(new SimpleGrantedAuthority(role.name()));}
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 
 }

@@ -16,20 +16,20 @@ public class ProposalController {
         this.proposalService = proposalService;
     }
 
-    @GetMapping
-    public List<ProposalEntity> getProposals() {
-        return this.proposalService.getProposals();
-    }
-
-    @GetMapping("{id}")
-    public ProposalEntity getProposalById(@PathVariable("id") UUID id) {
-        return this.proposalService.getProposalById(id);
-    }
-
-    @PostMapping("{eventId}")
-    public ProposalEntity createProposal(@RequestBody ProposalDto proposalDTO, @PathVariable("eventId") UUID eventId) {
-        return this.proposalService.createProposal(proposalDTO, eventId);
-    }
+//    @GetMapping
+//    public List<ProposalEntity> getProposals() {
+//        return this.proposalService.getProposals();
+//    }
+//
+//    @GetMapping("{id}")
+//    public ProposalEntity getProposalById(@PathVariable("id") UUID id) {
+//        return this.proposalService.getProposalById(id);
+//    }
+//
+//    @PostMapping("{eventId}")
+//    public ProposalEntity createProposal(@RequestBody ProposalDto proposalDTO, @PathVariable("eventId") UUID eventId) {
+//        return this.proposalService.createProposal(proposalDTO, eventId);
+//    }
 
 //    @DeleteMapping("{id}")
 //    public void deleteProposal(@PathVariable("id") UUID id){
