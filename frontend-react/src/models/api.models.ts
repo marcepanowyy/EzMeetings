@@ -1,4 +1,14 @@
 
+  export  interface AuthResponse {
+    id: string;
+    email: string;
+    eventList: any[];
+    token: string;
+    created: string;
+  }
+  
+  
+  
 export interface LoginRequest {
     email: string;
     password: string;
@@ -9,46 +19,34 @@ export interface LoginRequest {
     password: string;
   }
   
-  export  interface EventCreationRequest {
-    name: string;
-    description: string;
-    location: string;
-    eventProposals: Array<{ startDate: string }>;
-  }
-  
-  export  interface AuthResponse {
-    id: string;
-    email: string;
-    eventList: any[];
-    token: string;
-    created: string;
-  }
-  
-  export interface EventCreationResponse {
-    id: string;
-    name: string;
-    description: string;
-    location: string;
-    eventProposals: Array<{
-      id: string;
-      startDate: string;
+
+  export interface EventProposal {
+    id?: string;
+    startDate: string;
+    votes?: Array<{
+      voteId: string;
+      voterId: string;
+      voteEmail: string;
+      state: string;
+      created: string;
     }>;
+  }
+
+  export interface Proposal {
+    start:Date;
+      end:Date;
+      title:string;
   }
   
 
-
-  export interface Event {
-    id: string;
+  export interface EventResponse {
+    id?: string;
     name: string;
     description: string;
     location: string;
-    eventProposals?: Array<{
-      id: string;
-      startDate: string;
-    }>;
+    eventProposals: EventProposal[];
   }
   
-  export interface EventListResponse {
-    [index: number]: Event; // This assumes the response is an array of events
+  export interface MultipleEventsResponse {
+    [index: number]: EventResponse;
   }
-  

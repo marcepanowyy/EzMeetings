@@ -1,35 +1,45 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent,useEffect } from 'react';
 import { Calendar, momentLocalizer, SlotInfo, Event as CalendarEvent } from 'react-big-calendar';
+
+
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import styles from './CreateEvent.module.css';
-import Proposal from '../../models/proposal.model';
 
+import {EventResponse,Proposal} from '../../models/api.models';
 
 const localizer = momentLocalizer(moment);
 
-const EventForm: React.FC = () => {
+const EventForm: React.FC<{ event?: EventResponse,onSubmit: (eventData: EventResponse) => void; }> = ({ event,onSubmit }) => {
   const [proposals, setProposals] = useState<Proposal[]>([]);
-  const [name, setName] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
-  const [location, setLocation] = useState<string>('');
+  const [name, setName] = useState<string>(event?.name || '');
+  const [description, setDescription] = useState<string>(event?.description || '');
+  const [location, setLocation] = useState<string>(event?.location || '');
+  
+  useEffect(() => {
+    if (event?.eventProposals) {
+      const initialProposals = event.eventProposals.map((proposal) => ({
+        start: new Date(proposal.startDate),
+        end: new Date(new Date(proposal.startDate).setHours(new Date(proposal.startDate).getHours() + 1)),
+        title: event.name
+      }));
+      setProposals(initialProposals);
+    }
+  }, [event]);
 
   const isSubmitDisabled = !name || !description || !location || proposals.length === 0;
 
   const handleSelectSlot = (slotInfo: SlotInfo) => {
-    const { start } = slotInfo;
-    
-    const end = new Date(start);
-    end.setHours(start.getHours() + 1);
-    if (start < new Date()) {
-        return;
-      }
+    const start = new Date(slotInfo.start);
+    const end = new Date(slotInfo.start);
+    end.setHours(end.getHours() + 1);
+
     const newProposal: Proposal = {
-      id: Math.random(),
       start,
       end,
       title: 'New Proposal'
     };
+
     setProposals([...proposals, newProposal]);
   };
 
@@ -41,10 +51,24 @@ const EventForm: React.FC = () => {
     setProposals(proposals.filter(e => e.start !== proposal.start));
   };
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); 
+    const eventData: EventResponse = {
+      id: event?.id || '',
+      name,
+      description,
+      location,
+      eventProposals: proposals.map((proposal) => ({
+        startDate: proposal.start.toISOString(),
+      }))
+    };
+    onSubmit(eventData);
+  };
+
   return (
     <section className={styles.createEventSection}>
       <h2 className={styles.title}>Create Event</h2>
-      <form className={styles.formContainer}>
+      <form onSubmit={handleSubmit} className={styles.formContainer}>
         <div className={styles.formHeader}>
         <input
           className={styles.textInput}
@@ -95,3 +119,4 @@ const EventForm: React.FC = () => {
 };
 
 export default EventForm;
+

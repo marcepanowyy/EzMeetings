@@ -5,17 +5,11 @@ import {
     LoginRequest,
     RegisterRequest,
     AuthResponse,
-    EventCreationRequest,
-    EventCreationResponse,
-    EventListResponse,
-    Event,
+    EventResponse,
+
 } from "../models/api.models";
 
 export const queryClient = new QueryClient();
-
-
-
-
 
 export const handleResponse = (response: Response) => {
     if (!response.ok) {
@@ -25,7 +19,7 @@ export const handleResponse = (response: Response) => {
   }
   
 
-  export  const login = async (loginDetails: LoginRequest): Promise<AuthResponse> => {
+  export  const login = async (loginDetails: LoginRequest) => {
     const response = await fetch('http://localhost:8080/auth/login', {
       method: 'POST',
       headers: {
@@ -33,12 +27,21 @@ export const handleResponse = (response: Response) => {
       },
       body: JSON.stringify(loginDetails),
     });
+
+    const resData:AuthResponse = await handleResponse(response);
+    const token = resData.token;
+    localStorage.setItem("token", token);
   
-    return handleResponse(response);
+    const redirectUrl = new URLSearchParams(window.location.search).get('redirect');
+    const redirectPath = redirectUrl ? redirectUrl : '/events';
+
+    return redirect(redirectPath);
+
+
   }
   
 
-  export const register = async (registerDetails: RegisterRequest): Promise<AuthResponse> => {
+  export const register = async (registerDetails: RegisterRequest) => {
     const response = await fetch('http://localhost:8080/auth/register', {
       method: 'POST',
       headers: {
@@ -46,17 +49,23 @@ export const handleResponse = (response: Response) => {
       },
       body: JSON.stringify(registerDetails),
     });
+    const resData:AuthResponse = await handleResponse(response);
+    const token = resData.token;
+    localStorage.setItem("token", token);
   
-    return handleResponse(response);
+    const redirectUrl = new URLSearchParams(window.location.search).get('redirect');
+    const redirectPath = redirectUrl ? redirectUrl : '/events';
+
+    return redirect(redirectPath);
   }
   
 
-  export  const createEvent = async (eventDetails: EventCreationRequest, token: string): Promise<EventCreationResponse> => {
+  export const postNewEvent = async (eventDetails: EventResponse, token: string): Promise<EventResponse> => {
     const response = await fetch('http://localhost:8080/event/user', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(eventDetails),
     });
@@ -64,30 +73,14 @@ export const handleResponse = (response: Response) => {
     return handleResponse(response);
   }
   
-
-  
-  export const fetchEventById = async (eventId: string, token: string): Promise<Event> => {
+  // Fetch function for getting event details
+  export const getEventDetails = async (eventId: string, token: string): Promise<EventResponse> => {
     const response = await fetch(`http://localhost:8080/event/${eventId}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
       },
     });
   
     return handleResponse(response);
   }
-  
-  // Function to get a list of events for a user
-export  const fetchUserEvents = async (token: string): Promise<EventListResponse> => {
-    const response = await fetch('http://localhost:8080/event/user', {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
-  
-    return handleResponse(response);
-  }
-  
