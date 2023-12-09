@@ -100,7 +100,7 @@ const Register: React.FC = () => {
             Already have an account? <Link to="/login">Login</Link>
             </p>
           <button
-            className={styles.authButton}
+            className="button"
             disabled={
               !emailIsValid || !passwordIsValid || !confirmPasswordIsValid
             }

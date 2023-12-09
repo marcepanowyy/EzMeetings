@@ -75,7 +75,7 @@ const Login: React.FC = () => {
             Don't have an account? <Link to="/register">Register</Link>
             </p>
           <button
-            className={styles.authButton}
+            className="button"
             disabled={!emailIsValid || !passwordIsValid}
           >
             Submit
