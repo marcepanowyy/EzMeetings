@@ -26,7 +26,7 @@ const RootLayout: React.FC = () => {
     
     return (
         <div>
-            <h1>RootLayout</h1>
+            {/* <h1>RootLayout</h1> */}
             <Outlet />
         </div>
     );

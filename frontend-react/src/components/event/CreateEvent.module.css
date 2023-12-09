@@ -56,7 +56,7 @@
   cursor: pointer;
   transition: background-color 0.3s;
   align-self: center;
-  width: min(50%, 300px);
+  width: min(80%, 400px);
   margin:1.4em;
 }
 

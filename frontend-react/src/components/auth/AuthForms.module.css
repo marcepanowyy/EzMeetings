@@ -1,0 +1,115 @@
+.authSection{
+    width:100%;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background-color: #f7f7f7;
+}
+
+.authFormSection {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    width: min(100%,400px);
+  
+    background-color: #f7f7f7;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+  
+  .authTitle {
+    font-size: 36px;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+  }
+  
+  .inputWrapper {
+    width: 100%;
+    margin-bottom: 10px;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .inputField {
+    padding: 15px 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 25px;
+    font-size: 16px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    width: 300px;
+    background-color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .inputField:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  }
+  
+  .inputInvalid {
+    border-color: #ff1744;
+    background-color: #fff0f0;
+  }
+  
+  .errorText {
+    color: #ff1744;
+    font-size: 14px;
+    text-align: center;
+    margin-top: 5px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .authButton {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 25px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    background-color: #007bff;
+    color: white;
+    width: 100%;
+    font-weight: 500;
+    letter-spacing: 1px;
+    margin-top: 20px; /* Added more space above the button */
+
+  }
+  
+  .authButton:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+  }
+  
+  .authButton:disabled {
+    background-color: #cccccc;
+    color: #666666;
+    cursor: not-allowed;
+  }
+  
+  @media (max-width: 768px) {
+    .authFormSection {
+      margin-top: 30px;
+      margin-bottom: 30px;
+      padding: 20px;
+    }
+  
+    .authTitle {
+      font-size: 28px;
+    }
+  
+    .inputField,
+    .authButton {
+      max-width: 100%;
+    }
+  }
+  
