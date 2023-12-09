@@ -1,6 +1,6 @@
 package combat.squad.DtoTests;
 
-import combat.squad.user.UserDto;
+import combat.squad.auth.UserDto;
 import org.junit.jupiter.api.*;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 

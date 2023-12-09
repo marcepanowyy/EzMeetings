@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ProposalService {
@@ -22,28 +23,32 @@ public class ProposalService {
         return this.proposalRepository.findAll();
     }
 
-    public ProposalEntity getProposalById(Long id) {
+    public ProposalEntity getProposalById(UUID id) {
         return this.proposalRepository.findById(id).orElseThrow();
     }
 
-    public ProposalEntity createProposal(ProposalDto proposalDTO, Long eventId){
+    public ProposalEntity createProposal(ProposalDto proposalDTO, UUID eventId){
+
         EventEntity event = this.eventRepository.findById(eventId).orElseThrow();
 
-        for (ProposalEntity proposal : event.getProposals()) {
-            if (proposal.getStartDate().equals(proposalDTO.startDate()) || proposal.getEndDate().equals(proposalDTO.endDate())) {
-                throw new IllegalArgumentException("Event already has a proposal with this date");
-            }
-        }
         ProposalEntity proposalEntity = new ProposalEntity(
                 event,
-                proposalDTO.startDate(),
-                proposalDTO.endDate()
+                proposalDTO.startDate()
         );
+
         return this.proposalRepository.save(proposalEntity);
     }
 
-    public void deleteProposal(Long id) {
-        this.proposalRepository.deleteById(id);
+//    public void deleteProposal(UUID id) {
+//        this.proposalRepository.deleteById(id);
+//    }
+
+    public ProposalRo toProposalRo(ProposalEntity proposalEntity) {
+        return new ProposalRo(
+                proposalEntity.getId(),
+                proposalEntity.getStartDate()
+        );
     }
 
 }
+

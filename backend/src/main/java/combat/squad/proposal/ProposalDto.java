@@ -11,25 +11,7 @@ public record ProposalDto(
         @NotNull(message = "Start date cannot be null")
         @FutureOrPresent(message = "Start date must be present or future date")
         @DateTimeFormat(pattern = DATE_FORMAT)
-        Date startDate,
-        @NotNull(message = "End date cannot be null")
-        @Future(message = "End date must be in the future")
-        @DateTimeFormat(pattern = DATE_FORMAT)
-        Date endDate
+        Date startDate
 ) {
-    public ProposalDto {
-            DateValidator.validateDates(
-                       startDate,
-                        endDate
-            );
-    }
 
-    @Override
-    public Date startDate() {
-        return startDate;
-    }
-    @Override
-    public Date endDate() {
-        return endDate;
-    }
 }
