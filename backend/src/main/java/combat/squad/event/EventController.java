@@ -34,7 +34,7 @@ public class EventController {
         return this.eventService.getEventsByUser(authentication.getName());
     }
 
-    @PostMapping // only logged in users can access this endpoint
+    @PostMapping ("/user")// only logged in users can access this endpoint
     public EventRo createEvent(@RequestBody EventDto eventDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return this.eventService.createEvent(authentication.getName(), eventDto);
