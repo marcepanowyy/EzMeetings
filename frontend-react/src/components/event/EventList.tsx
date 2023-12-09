@@ -7,13 +7,10 @@ import { useNavigate } from "react-router-dom";
 const EventList: React.FC = () => {
     const navigate = useNavigate();
     
-    const onClickCreateEvent = (event:React.MouseEvent) => {
-        event.preventDefault();
+    const onClickCreateEvent = () => {
         navigate('/events/new');
-
     }
 
-  
     return (
     <div className={styles.eventListSection}>
       <div className={styles.eventsHeader}>
