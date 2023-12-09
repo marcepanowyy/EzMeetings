@@ -22,37 +22,47 @@ function App() {
       element: <RootLayout />,
       loader: tokenLoader,
       children: [
-        { index:true, element: <Home /> },
-        { path: "events",
-        children: [
-          { index:true, element: <EventList />,loader: checkAuthLoader },//bedzie zawieral info o eventach uzytkownika zalogowanego
-          { path: "new", element: <CreateEvent />,loader: checkAuthLoader},
-          { path: ":id", 
-          
+        { index: true, element: <Home /> },
+        {
+          path: "events",
           children: [
-            {index:true, element: <EventDetails />},
-            { path: "edit", element: <EditEvent />,loader: checkAuthLoader},
-          ]
-        },
-         
-        ],
+            {
+              index: true,
+              element: <EventList />,
+              // loader: checkAuthLoader
+            }, //bedzie zawieral info o eventach uzytkownika zalogowanego
+            {
+              path: "new",
+              element: <CreateEvent />,
+              // loader: checkAuthLoader
+            },
+            {
+              path: ":id",
 
-      
-      },
-      { path: "/login", element: <Login /> },
-        { path: "/register", element: <Register />  },
-       
+              children: [
+                { index: true, element: <EventDetails /> },
+                {
+                  path: "edit",
+                  element: <EditEvent />,
+                  loader: checkAuthLoader,
+                },
+              ],
+            },
+          ],
+        },
+        { path: "/login", element: <Login /> },
+        { path: "/register", element: <Register /> },
+
         {
           path: "logout",
           action: logoutAction,
           loader: checkAuthLoader,
         },
       ],
-    }
-    ])
+    },
+  ]);
 
-  return (
-    <RouterProvider router={router} />  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
