@@ -22,22 +22,35 @@ public class EventController {
         return this.eventService.getEvents();
     }
 
+    @PostMapping
+    public EventRo createEvent(@RequestBody EventDto eventDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return this.eventService.createEvent(authentication.getName(), eventDto);
+    }
+
     @GetMapping("{id}")
     public EventRo getEventDetailsById(@PathVariable("id") UUID eventId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return this.eventService.getEventDetails(authentication.getName(), eventId);
     }
 
-    @GetMapping("/user")
-    public List<EventRo> getEventsByUser() {
+    @GetMapping("/all")
+    public List<EventRo> getAllUserEvents() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return this.eventService.getEventsByUser(authentication.getName());
+        return this.eventService.getAllUserEvents(authentication.getName());
     }
 
-    @PostMapping ("/user")
-    public EventRo createEvent(@RequestBody EventDto eventDto) {
+    @GetMapping("/created")
+    public List<EventRo> getCreatedUserEvents() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return this.eventService.createEvent(authentication.getName(), eventDto);
+        return this.eventService.getCreatedUserEvents(authentication.getName());
     }
+
+    @PostMapping("/participate/{id}")
+    public EventRo participateInEvent(@PathVariable("id") UUID eventId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return this.eventService.participateInEvent(authentication.getName(), eventId);
+    }
+
 
 }

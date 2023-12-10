@@ -9,13 +9,22 @@ import java.util.UUID;
 
 public record EventRo(
 
-    UUID id,
-    String name,
-    String description,
-    String location,
-//    ProposalRo finalProposal,
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    Optional<List<ProposalRo>> eventProposals
+        UUID id,
+        String name,
+        String description,
+        String location,
+
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        Optional<List<ProposalRo>> eventProposals,
+
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        Optional<UUID> creatorId,
+
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        Optional<String> creatorEmail,
+
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        Optional<UUID> finalProposalId
 
 ) {
 

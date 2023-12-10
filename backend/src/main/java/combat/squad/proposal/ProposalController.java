@@ -23,10 +23,10 @@ public class ProposalController {
 
     // check all the votes for a proposal
 
-    @GetMapping("{id}")
-    public ProposalRo getProposalById(@PathVariable("id") UUID id) {
-        return this.proposalService.getProposalById(id);
-    }
+//    @GetMapping("{id}")
+//    public ProposalRo getProposalById(@PathVariable("id") UUID id) {
+//        return this.proposalService.getProposalById(id);
+//    }
 //
 //    @PostMapping("{eventId}")
 //    public ProposalEntity createProposal(@RequestBody ProposalDto proposalDTO, @PathVariable("eventId") UUID eventId) {

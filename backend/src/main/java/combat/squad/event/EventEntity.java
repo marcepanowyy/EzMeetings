@@ -11,6 +11,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -34,9 +35,6 @@ public class EventEntity {
 
     private String description;
 
-    @OneToOne
-    private ProposalEntity finalProposal;
-
     private String location;
 
     @JsonManagedReference
@@ -47,20 +45,28 @@ public class EventEntity {
     @JsonBackReference
     private UserEntity creator;
 
+    @ManyToMany
+    @JoinTable(
+            name = "user_events",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<UserEntity> participants;
+
     @CreatedDate
     private Date created;
 
-    public EventEntity(String name, String description, ProposalEntity finalProposal,String location, UserEntity creator, List<ProposalEntity> eventProposals) {
+    private UUID finalProposalId;
+
+    public EventEntity(String name, String description,String location, UserEntity creator, List<ProposalEntity> eventProposals) {
         this.name = name;
         this.description = description;
-        this.finalProposal = finalProposal;
         this.location = location;
         this.creator = creator;
         this.eventProposals = eventProposals;
-    }
+        this.participants = List.of(creator);
+        this.finalProposalId = null;
 
-    public void addProposal(ProposalEntity proposal) {
-        this.eventProposals.add(proposal);
     }
 
 }

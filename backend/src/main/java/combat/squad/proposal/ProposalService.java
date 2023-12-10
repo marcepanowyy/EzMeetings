@@ -3,11 +3,14 @@ package combat.squad.proposal;
 import combat.squad.event.EventEntity;
 import combat.squad.event.EventRepository;
 import combat.squad.event.EventService;
+import combat.squad.vote.VoteRo;
 import combat.squad.vote.VoteService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -25,13 +28,16 @@ public class ProposalService {
     }
 
     public List<ProposalRo> getProposals() {
-        return this.proposalRepository.findAll().stream().map(this::toProposalRo).toList();
+
+        return this.proposalRepository.findAll().stream()
+                .map(proposal -> toProposalRo(proposal, true))
+                .collect(Collectors.toList());
     }
 
     public ProposalRo getProposalById(UUID id) {
 
         ProposalEntity proposal = this.proposalRepository.findById(id).orElseThrow();
-        return this.toProposalRo(proposal);
+        return this.toProposalRo(proposal, true);
 
     }
 
@@ -47,12 +53,21 @@ public class ProposalService {
         return this.proposalRepository.save(proposalEntity);
     }
 
-    public ProposalRo toProposalRo(ProposalEntity proposal) {
+    public ProposalRo toProposalRo(
+            ProposalEntity proposal,
+            Boolean showVotes
+
+    ) {
+
+        Optional<List<VoteRo>> votes = showVotes
+                ? Optional.of(proposal.getVotes().stream().map(vote -> voteService.toVoteRo(vote, true)).toList())
+                : Optional.empty();
+
 
         return new ProposalRo(
                 proposal.getId(),
                 proposal.getStartDate(),
-                proposal.getVotes().stream().map(voteService::toVoteRo).toList()
+                votes
         );
 
     }
