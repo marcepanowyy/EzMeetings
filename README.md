@@ -8,21 +8,18 @@ Zaproszeni uczestnicy będą mieli możliwość głosowania na preferowane termi
 odpowiednią dla wszystkich datę wydarzenia.
 
 ### Plan działań:
-* Zaimplementowanie gui umozliwiajacego wyswietlanie wydarzeń stworzonych przez konkretnego użytkownika
-* Zaimplementowanie gui pozwalającego na przeglądanie dostępnych opcji terminowych dla danego wydarzenia 
-* Stworzenie w gui możliwości dodawania nowych wydarzeń przez użytkownika (początkowo niezalogowanego)
-* Zapewnienie prostego formularza umożliwiajacego okreslenie nazwy wydarzenia, jego opisu oraz opcji terminowych
-* Zapewnienie gui do zaznaczania preferowanych opcji terminowych przez użytkownika na konkretne wydarzenie
-* możliwość oddania głosu (vote) na konkretne wydarzenie przez użytkownika (początkowo niezalogowanego) w gui
-* Autoryzacja i atuentykacja na backendzie - jesli bedzie czas
-* Dodanie testów dla frontendu
+* testy na backendzie i frontendzie
+* nowa relacja event -> participants (many to many)
+* dodanie opcji uczestnictwa w evencie podajac id wydarzenia
 
 ### Technologie
 
 Spring Boot, JPA (Hibernate), PostreSQL - backend
-JavaFX - frontend
+React - frontend
 
-### Schemat bazy danych
+### Schemat bazy danych 
+
+poprawić schemat bazy danych, gdy doda się nową relację
 
 ![db_diagram.jpg](assets/db_diagram.png)
 
@@ -73,28 +70,28 @@ Aby uruchomic aplikację należy najpierw postawić bazę danych. Proponujemy je
 
 #### Backend
 
-Importujemy folder backend do Intellij: File -> Open.. Czekamy, aż Gradle pobierze wszystkie zależności i 
+Importujemy folder 'backend' do Intellij: File -> Open.. Czekamy, aż Gradle pobierze wszystkie zależności i 
 zbuduje projekt. Aby uruchomić aplikację korzystamy z polecenia "Run" na klasie CombatSquadApplication (zielona strzałka)
 
+Aplikacja powinna się uruchomić na porcie 8080
+
 Aby przetestować działanie aplikacji korzystamy z test runnera (zielona strzałka obok nazwy klasy testowej)
+- narazie nie beda dzialac testy
 
 #### Frontend
 
-Analogicznie tak jak wyżej, tylko importujemy folder frontend. 
-Aby uruchomić aplikację korzystamy z polecenia "Run" na klasie Main (zielona strzałka).
+Importujemy folder 'frontend' do Webstorm lub VS Code: File -> Open.. 
 
-#### Frontend w  ReactJS
-
-Aby włączyć projekt należy wejść do folderu frontend-react, a następnie wpisać :
+Aby pobrać moduły node.js należy wpisać w terminalu:
 ```
 npm install
 ```
-Pozwoli to załadować wszystkie potrzebne biblioteki. Następnie wpisujemy:
+Pozwoli nam to załadować wszystkie potrzebne biblioteki. Następnie wpisujemy:
 ```
 npm start
 ```
+
 Aplikacja powinna się uruchomić na porcie 3000.
-Proszę wpisać w przeglądarce adres: http://localhost:3000/
 
 Podstawowe routy:
 * /login - logowanie
