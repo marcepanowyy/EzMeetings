@@ -4,6 +4,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -20,8 +21,6 @@ public class VoteController {
     public List<VoteRo> getVotes() {
         return this.voteService.getVotes();
     }
-
-    // todo - check if dto is valid
 
     @PostMapping
     public List<VoteRo> vote(@RequestBody List<VoteDto> voteDtos) {

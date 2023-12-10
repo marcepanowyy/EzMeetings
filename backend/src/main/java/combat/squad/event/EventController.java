@@ -22,6 +22,12 @@ public class EventController {
         return this.eventService.getEvents();
     }
 
+    @PostMapping
+    public EventRo createEvent(@RequestBody EventDto eventDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return this.eventService.createEvent(authentication.getName(), eventDto);
+    }
+
     @GetMapping("{id}")
     public EventRo getEventDetailsById(@PathVariable("id") UUID eventId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -34,10 +40,5 @@ public class EventController {
         return this.eventService.getEventsByUser(authentication.getName());
     }
 
-    @PostMapping ("/user")
-    public EventRo createEvent(@RequestBody EventDto eventDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return this.eventService.createEvent(authentication.getName(), eventDto);
-    }
 
 }

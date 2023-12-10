@@ -2,6 +2,7 @@ package combat.squad.auth;
 
 import combat.squad.auth.security.JwtTokenProvider;
 import combat.squad.event.EventEntity;
+import combat.squad.event.EventRo;
 import combat.squad.vote.VoteEntity;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -51,6 +52,9 @@ public class UserEntity implements UserDetails {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "voter")
     private List<VoteEntity> votes;
 
+//    @ManyToMany(mappedBy = "participants")
+//    private List<EventEntity> events;
+
     @CreatedDate
     private Date created;
 
@@ -73,9 +77,9 @@ public class UserEntity implements UserDetails {
         return passwordEncoder.matches(attempt, this.password);
     }
 
-    public UserRo toUserRo(boolean showToken) {
-        Optional<String> token = showToken ? Optional.ofNullable(jwtTokenProvider.generateToken(this)) : Optional.empty();
-        return new UserRo(this.id, this.email, this.createdEvents, token, this.created);
+    public UserRo toUserRo(Boolean showToken) {
+        Optional<String> token = showToken ? Optional.of(jwtTokenProvider.generateToken(this)) : Optional.empty();
+        return new UserRo(this.id, this.email, token, this.created);
     }
 
     @Override

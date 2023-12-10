@@ -1,16 +1,13 @@
 package combat.squad.vote;
 
 import combat.squad.auth.UserRepository;
-import combat.squad.event.EventEntity;
-import combat.squad.event.EventRepository;
 import combat.squad.proposal.ProposalEntity;
 import combat.squad.proposal.ProposalRepository;
-import combat.squad.proposal.ProposalService;
 import combat.squad.auth.UserEntity;
-import combat.squad.auth.UserService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -30,7 +27,9 @@ public class VoteService {
     }
 
     public List<VoteRo> getVotes() {
-        return this.voteRepository.findAll().stream().map(this::toVoteRo).toList();
+        return this.voteRepository.findAll().stream()
+                .map(vote -> toVoteRo(vote, true))
+                .collect(Collectors.toList());
     }
 
     public List<VoteRo> vote(String userEmail, List<VoteDto> voteDtos){
@@ -48,28 +47,53 @@ public class VoteService {
 
     public VoteRo createVote(VoteDto voteDto, UserEntity voter) {
 
-        UUID proposalId = voteDto.proposalId();
+        Optional<ProposalEntity> proposal = this.proposalRepository.findById(voteDto.proposalId());
 
-        ProposalEntity proposal = this.proposalRepository.findById(proposalId).orElseThrow();
+        if(proposal.isEmpty()){
+            throw new IllegalArgumentException("Proposal not found");
+        }
 
-        VoteEntity vote = new VoteEntity(
+        VoteEntity vote = this.voteRepository.findByVoterAndProposal(voter, proposal.get());
+
+        if (vote != null) {
+
+            // user has already voted on this proposal
+
+            vote.setState(voteDto.state());
+            vote = this.voteRepository.save(vote);
+            return this.toVoteRo(vote, false);
+
+        }
+
+        // user has not voted on this proposal yet
+
+        vote = new VoteEntity(
                 voter,
-                proposal,
+                proposal.get(),
                 voteDto.state()
         );
 
         vote = this.voteRepository.save(vote);
-        return this.toVoteRo(vote);
+        return this.toVoteRo(vote, false);
     }
 
-    public VoteRo toVoteRo(VoteEntity voteEntity) {
+    public VoteRo toVoteRo(VoteEntity voteEntity, Boolean showVoter) {
+
+        Optional<String> voterEmail = showVoter
+                ? Optional.of(voteEntity.getVoter().getEmail())
+                : Optional.empty();
+
+        Optional<UUID> voterId = showVoter
+                ? Optional.of(voteEntity.getVoter().getId())
+                : Optional.empty();
 
         return new VoteRo(
                 voteEntity.getId(),
-                voteEntity.getVoter().getId(),
-                voteEntity.getVoter().getEmail(),
+                voterId,
+                voterEmail,
                 voteEntity.getState(),
                 voteEntity.getCreated()
+
         );
     }
 

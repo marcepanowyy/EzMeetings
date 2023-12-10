@@ -32,7 +32,7 @@ public class SecurityConfig {
                 .disable()
                 .authorizeRequests()
                 .antMatchers("/auth/register", "/auth/login", "/proposal/**", "/vote/**", "/event/**", "/auth/**").permitAll()
-                .antMatchers("/auth/**", "/event").hasRole("ADMIN")
+//                .antMatchers("/auth/**", "/event").hasRole("ADMIN")
                 .anyRequest()
                 .authenticated()
                 .and()

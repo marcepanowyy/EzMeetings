@@ -34,9 +34,6 @@ public class EventEntity {
 
     private String description;
 
-    @OneToOne
-    private ProposalEntity finalProposal;
-
     private String location;
 
     @JsonManagedReference
@@ -50,13 +47,15 @@ public class EventEntity {
     @CreatedDate
     private Date created;
 
-    public EventEntity(String name, String description, ProposalEntity finalProposal,String location, UserEntity creator, List<ProposalEntity> eventProposals) {
+    private UUID finalProposalId;
+
+    public EventEntity(String name, String description,String location, UserEntity creator, List<ProposalEntity> eventProposals) {
         this.name = name;
         this.description = description;
-        this.finalProposal = finalProposal;
         this.location = location;
         this.creator = creator;
         this.eventProposals = eventProposals;
+        this.finalProposalId = null;
     }
 
     public void addProposal(ProposalEntity proposal) {

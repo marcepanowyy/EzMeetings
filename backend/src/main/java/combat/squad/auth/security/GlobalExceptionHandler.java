@@ -20,6 +20,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException ex) {
+
         HttpStatus status = ex.getStatus();
         String error = status.getReasonPhrase();
         String message = ex.getReason();
@@ -32,12 +33,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
+
         HttpStatus status = HttpStatus.BAD_REQUEST;
         String error = status.getReasonPhrase();
         LocalDateTime timestamp = LocalDateTime.now();
 
         Map<String, String> validationErrors = new HashMap<>();
         List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
+
         for (FieldError fieldError : fieldErrors) {
             validationErrors.put(fieldError.getField(), fieldError.getDefaultMessage());
         }
