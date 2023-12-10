@@ -7,10 +7,12 @@ import Home from "./components/Home";
 import EventList from "./components/event/EventList";
 import EventDetails from "./components/event/EventDetails";
 import CreateEvent from "./pages/CreateEvent";
-import EditEvent from "./components/event/EditEvent";
+import EditEvent from "./pages/EditEvent";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 
+import { queryClient } from "./utils/http";
+import { QueryClientProvider } from "@tanstack/react-query";
 function App() {
   const router = createBrowserRouter([
     {
@@ -25,12 +27,12 @@ function App() {
             {
               index: true,
               element: <EventList />,
-              // loader: checkAuthLoader
-            }, //bedzie zawieral info o eventach uzytkownika zalogowanego
+              loader: checkAuthLoader
+            }, 
             {
               path: "new",
               element: <CreateEvent />,
-              // loader: checkAuthLoader
+              loader: checkAuthLoader
             },
             {
               path: ":id",
@@ -40,7 +42,7 @@ function App() {
                 {
                   path: "edit",
                   element: <EditEvent />,
-                  // loader: checkAuthLoader,
+                  loader: checkAuthLoader,
                 },
               ],
             },
@@ -76,7 +78,11 @@ function App() {
     },
   ]);
 
-  return <RouterProvider router={router} />;
+  return(
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />;
+    </QueryClientProvider>
+    )
 }
 
 export default App;

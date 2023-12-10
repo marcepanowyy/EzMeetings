@@ -26,13 +26,22 @@ export interface LoginRequest {
     votes?: Array<{
       voteId: string;
       voterId: string;
-      voteEmail: string;
+      voterEmail: string;
       state: string;
       created: string;
     }>;
   }
 
+  export interface EventVote{
+    voteId: string;
+    voterId: string;
+    voterEmail: string;
+    state: string;
+    created: string;
+  }
+
   export interface Proposal {
+    id?: string;
     start:Date;
       end:Date;
       title:string;
@@ -44,7 +53,7 @@ export interface LoginRequest {
     name: string;
     description: string;
     location: string;
-    eventProposals: EventProposal[];
+    eventProposals?: EventProposal[];
   }
   
   export interface MultipleEventsResponse {

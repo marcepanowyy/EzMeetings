@@ -15,10 +15,13 @@ const EventForm: React.FC<{ event?: EventResponse,onSubmit: (eventData: EventRes
   const [name, setName] = useState<string>(event?.name || '');
   const [description, setDescription] = useState<string>(event?.description || '');
   const [location, setLocation] = useState<string>(event?.location || '');
+  const title = event ? "Edit Event" : "Create Event";
+
   
   useEffect(() => {
     if (event?.eventProposals) {
       const initialProposals = event.eventProposals.map((proposal) => ({
+        id: proposal.id,
         start: new Date(proposal.startDate),
         end: new Date(new Date(proposal.startDate).setHours(new Date(proposal.startDate).getHours() + 1)),
         title: event.name
@@ -35,6 +38,7 @@ const EventForm: React.FC<{ event?: EventResponse,onSubmit: (eventData: EventRes
     end.setHours(end.getHours() + 1);
 
     const newProposal: Proposal = {
+      id:Math.random().toString(36).substring(7),
       start,
       end,
       title: 'New Proposal'
@@ -59,6 +63,7 @@ const EventForm: React.FC<{ event?: EventResponse,onSubmit: (eventData: EventRes
       description,
       location,
       eventProposals: proposals.map((proposal) => ({
+        id: proposal.id,
         startDate: proposal.start.toISOString(),
       }))
     };
@@ -67,7 +72,7 @@ const EventForm: React.FC<{ event?: EventResponse,onSubmit: (eventData: EventRes
 
   return (
     <section className={styles.createEventSection}>
-      <h2 className={styles.title}>Create Event</h2>
+      <h2 className={styles.title}>{title}</h2>
       <form onSubmit={handleSubmit} className={styles.formContainer}>
         <div className={styles.formHeader}>
         <input

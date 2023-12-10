@@ -47,8 +47,8 @@ const Register: React.FC = () => {
    
     try {
       await register(registerDetails);
-
-      navigate('/events');
+      navigate('/');
+      window.location.reload();
     } catch (error) {
       console.error("Register error:", error);
     }

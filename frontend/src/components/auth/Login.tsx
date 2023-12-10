@@ -35,10 +35,11 @@ const Login: React.FC = () => {
     const loginDetails: LoginRequest = {
       email: emailValue,
       password: passwordValue,
-    };  
+    }; 
     try {
       await login(loginDetails);
-      navigate('/events');
+      navigate('/');
+      window.location.reload();
     } catch (error) {
       console.error("Login error:", error);
     }
