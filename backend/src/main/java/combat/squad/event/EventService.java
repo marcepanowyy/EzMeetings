@@ -8,6 +8,7 @@ import combat.squad.auth.UserEntity;
 import combat.squad.auth.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,6 +105,26 @@ public class EventService {
         this.eventRepository.save(event);
 
         return this.toEventRo(event, true, false, false, false);
+    }
+
+    @Transactional
+    public EventRo participateInEvent(String userEmail, UUID eventId) {
+
+        UserEntity user = this.userRepository.findByEmail(userEmail);
+
+        if (user == null) {
+            throw new IllegalArgumentException("User not found");
+        }
+
+        EventEntity event = this.eventRepository.findById(eventId).orElseThrow();
+
+        event.getParticipants().add(user);
+        this.eventRepository.save(event);
+
+        user.getEvents().add(event);
+        this.userRepository.save(user);
+
+        return this.toEventRo(event, true, true, false, false);
     }
 
     public EventRo toEventRo(

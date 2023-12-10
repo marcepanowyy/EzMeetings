@@ -40,5 +40,11 @@ public class EventController {
         return this.eventService.getEventsByUser(authentication.getName());
     }
 
+    @PostMapping("/participate/{id}")
+    public EventRo participateInEvent(@PathVariable("id") UUID eventId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return this.eventService.participateInEvent(authentication.getName(), eventId);
+    }
+
 
 }

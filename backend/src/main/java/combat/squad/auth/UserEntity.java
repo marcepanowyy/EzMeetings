@@ -52,8 +52,8 @@ public class UserEntity implements UserDetails {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "voter")
     private List<VoteEntity> votes;
 
-//    @ManyToMany(mappedBy = "participants")
-//    private List<EventEntity> events;
+    @ManyToMany(mappedBy = "participants")
+    private List<EventEntity> events;
 
     @CreatedDate
     private Date created;
@@ -64,9 +64,11 @@ public class UserEntity implements UserDetails {
     public UserEntity(String email, String password) {
         this.email = email;
         setPassword(password);
-        this.createdEvents = new ArrayList<>();
         this.votes = new ArrayList<>();
         this.role = Role.USER;
+        this.createdEvents = new ArrayList<>();
+        this.events = new ArrayList<>();
+
     }
 
     public void setPassword(String password) {
