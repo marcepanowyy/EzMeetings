@@ -41,23 +41,40 @@ public class EventService {
         return this.eventRepository.findById(id).orElseThrow();
     }
 
+    @Transactional
     public EventRo getEventDetails(String userEmail, UUID eventId) {
 
-//         TODO check if user is a creator of this event or a participant
+        UserEntity user = this.userRepository.findByEmail(userEmail);
 
-//        UserEntity user = this.userRepository.findByEmail(userEmail);
-//
-//        if (user == null) {
-//            throw new IllegalArgumentException("User not found");
-//        }
+        if (user == null) {
+            throw new IllegalArgumentException("User not found");
+        }
 
         EventEntity event = this.eventRepository.findById(eventId).orElseThrow();
 
+        if (!event.getParticipants().contains(user)) {
+            throw new IllegalArgumentException("User is not participating in this event");
+        }
+
         return this.toEventRo(event, true, true, true, true);
+
     }
 
+    @Transactional
+    public List<EventRo> getAllUserEvents(String userEmail) {
 
-    public List<EventRo> getEventsByUser(String userEmail) {
+        UserEntity user = this.userRepository.findByEmail(userEmail);
+
+        if (user == null) {
+            throw new IllegalArgumentException("User not found");
+        }
+
+        return user.getEvents().stream()
+                .map(event -> toEventRo(event, false, true, false, false))
+                .collect(Collectors.toList());
+    }
+
+    public List<EventRo> getCreatedUserEvents(String userEmail) {
 
         UserEntity user = this.userRepository.findByEmail(userEmail);
 

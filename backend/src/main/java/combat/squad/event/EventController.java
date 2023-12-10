@@ -34,10 +34,16 @@ public class EventController {
         return this.eventService.getEventDetails(authentication.getName(), eventId);
     }
 
-    @GetMapping("/user")
-    public List<EventRo> getEventsByUser() {
+    @GetMapping("/all")
+    public List<EventRo> getAllUserEvents() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return this.eventService.getEventsByUser(authentication.getName());
+        return this.eventService.getAllUserEvents(authentication.getName());
+    }
+
+    @GetMapping("/created")
+    public List<EventRo> getCreatedUserEvents() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return this.eventService.getCreatedUserEvents(authentication.getName());
     }
 
     @PostMapping("/participate/{id}")
