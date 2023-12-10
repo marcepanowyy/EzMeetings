@@ -6,18 +6,20 @@ import {
     postNewEvent
 } from '../utils/http'
 import { getSimpleToken } from '../utils/auth';
-import { redirect } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const CreateEvent: React.FC = () => {
     const token = getSimpleToken();
+    const navigate = useNavigate();
     const handleCreateEvent = async (eventData: EventResponse) => {
         try {
           const response = await postNewEvent(eventData, token ?? '');
+          navigate(`/events/${response.id}`);
         } catch (error) {
           console.error("Error during event creation:", error);
         }
 
-        redirect('/events');
+        
       };
 
 

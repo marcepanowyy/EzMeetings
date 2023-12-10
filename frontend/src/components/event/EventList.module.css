@@ -81,6 +81,18 @@
     background-color: #0056b3;
     transform: translateY(-2px);
   }
+
+  .eventLink {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  .eventLink:hover .eventCard {
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
   
   @media (max-width: 768px) {
     .eventListSection {

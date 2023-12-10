@@ -1,43 +1,48 @@
-import {useParams,redirect} from 'react-router-dom'
+import {useParams,useNavigate} from 'react-router-dom'
 import React,{useEffect,useState} from 'react';
 import EventForm from '../components/event/EventForm';
 import { EventResponse } from '../models/api.models';
 
-import {getEventDetails} from '../utils/http'
+import {getEventDetails, putEvent} from '../utils/http'
 import { getSimpleToken } from '../utils/auth';
+import { EventResponseDetails } from '../models/eventDetails.models';
+import {useQuery} from '@tanstack/react-query'
 
-
+import LoadingOverlay from '../ui/LoadingOverlay/LoadingOverlay'
 const EditEvent: React.FC = () =>{
-    const [event, setEvent] = useState<EventResponse>();
     const id = useParams<{ id: string }>().id;
     const token = getSimpleToken();
-
-    useEffect(() => {
-        const fetchEvent = async () => {
-          try {
-            const fetchedEvent = await getEventDetails(id ?? '', token ?? '');
-            setEvent(fetchedEvent);
-          } catch (error) {
-            console.error("Error during event fetching:", error);
-          }
-        };
-    
-         fetchEvent();
-      }, [id, token]);
+    const navigate = useNavigate();
+   // console.log("WYKONUEJ SIE!!")
+    const { data, isLoading, isError, error } = useQuery({
+        queryKey: ["events", id],
+        queryFn: () => getEventDetails(id as string, token as string),
+      });
 
 
     const handleEditEvent = async (eventData: EventResponse) => {
-        try {
-        } catch (error) {
-        console.error("Error during event edition:", error);
-        }
-    
-        redirect('/events');
+      console.log("handleEditEvent",eventData)  
+      try {
+        const response = await putEvent(eventData, token ?? '');
+        navigate(`/events/${response.id}`);
+      } catch (error) {
+        console.error("Error during event creation:", error);
+      }
     };
 
-
-
-  return <EventForm event={event} onSubmit={handleEditEvent} />;
+    let renderComponent = null;
+    if (isLoading) renderComponent = <LoadingOverlay />;
+    if (isError && error)
+    renderComponent =  <p>Error: {error.message}</p>;
+    if(data){
+        console.log(data)
+        renderComponent = <EventForm event={data} onSubmit={handleEditEvent} />;
+    }
+    return (<>
+    {renderComponent}
+    </>)
+  
+ 
 };
 
 export default EditEvent;

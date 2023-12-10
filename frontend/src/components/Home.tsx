@@ -12,7 +12,7 @@ const Home: React.FC = () => {
             navigate('/events');
             return;
         }
-        navigate('/login?redirect=/events/new');
+        navigate('/login');
     };
     return (
     <div className={styles.homeSection}>
