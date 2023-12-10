@@ -31,12 +31,6 @@ export const handleResponse = (response: Response) => {
     const resData:AuthResponse = await handleResponse(response);
     const token = resData.token;
     localStorage.setItem("token", token);
-  
-    const redirectUrl = new URLSearchParams(window.location.search).get('redirect');
-    const redirectPath = redirectUrl ? redirectUrl : '/events';
-
-    return redirect(redirectPath);
-
 
   }
   
@@ -52,11 +46,7 @@ export const handleResponse = (response: Response) => {
     const resData:AuthResponse = await handleResponse(response);
     const token = resData.token;
     localStorage.setItem("token", token);
-  
-    const redirectUrl = new URLSearchParams(window.location.search).get('redirect');
-    const redirectPath = redirectUrl ? redirectUrl : '/events';
 
-    return redirect(redirectPath);
   }
   
 

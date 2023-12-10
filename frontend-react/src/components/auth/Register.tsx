@@ -3,10 +3,11 @@ import styles from "./AuthForms.module.css";
 import { emailValidator, passwordValidator } from "../../utils/validators";
 
 import useInput from "../../utils/use-input"; 
-import {Link} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import { RegisterRequest } from "../../models/api.models";
 import { register } from "../../utils/http";
 const Register: React.FC = () => {
+  const navigate = useNavigate();
   const {
     value: emailValue,
     isValid: emailIsValid,
@@ -43,14 +44,16 @@ const Register: React.FC = () => {
       email: emailValue,
       password: passwordValue,
     };
+   
     try {
       await register(registerDetails);
+
+      navigate('/events');
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("Register error:", error);
     }
-    resetEmail();
-    resetPassword();
-    resetConfirmPassword();
+    
+    
   };
 
   return (

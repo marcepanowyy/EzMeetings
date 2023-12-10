@@ -2,12 +2,13 @@ import React from "react";
 import styles from "./AuthForms.module.css";
 import { emailValidator, passwordValidator } from "../../utils/validators";
 import useInput from "../../utils/use-input"; // Adjust the import path as necessary
-import {Link} from 'react-router-dom';
+import {Link, redirect,useNavigate} from 'react-router-dom';
 
 import { login } from '../../utils/http'; // Adjust the import path as necessary
 import { LoginRequest } from '../../models/api.models'; // Adjust the import path as necessary
 
 const Login: React.FC = () => {
+  const navigate = useNavigate();
   const {
     value: emailValue,
     isValid: emailIsValid,
@@ -34,17 +35,14 @@ const Login: React.FC = () => {
     const loginDetails: LoginRequest = {
       email: emailValue,
       password: passwordValue,
-    };
-
-    resetEmail();
-    resetPassword();
-  
+    };  
     try {
       await login(loginDetails);
+      navigate('/events');
     } catch (error) {
       console.error("Login error:", error);
     }
-
+  
   };
   
 

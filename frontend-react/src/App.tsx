@@ -1,4 +1,4 @@
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { RouterProvider, createBrowserRouter, redirect } from "react-router-dom";
 import { tokenLoader, checkAuthLoader } from "./utils/auth.js";
 import { action as logoutAction } from "./pages/Logout";
 
@@ -10,7 +10,6 @@ import CreateEvent from "./pages/CreateEvent";
 import EditEvent from "./components/event/EditEvent";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
-
 
 function App() {
   const router = createBrowserRouter([
@@ -47,8 +46,26 @@ function App() {
             },
           ],
         },
-        { path: "/login", element: <Login /> },
-        { path: "/register", element: <Register /> },
+        {
+          path: "/login",
+          element: <Login />,
+          loader: () => {
+            if (checkAuthLoader() === null) {
+              return redirect("/events");
+            }
+            return null;
+          },
+        },
+        {
+          path: "/register",
+          element: <Register />,
+          loader: () => {
+            if (checkAuthLoader() === null) {
+              return redirect("/events");
+            }
+            return null;
+          },
+        },
 
         {
           path: "logout",
@@ -59,9 +76,7 @@ function App() {
     },
   ]);
 
-  return (
-      <RouterProvider router={router} />
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
