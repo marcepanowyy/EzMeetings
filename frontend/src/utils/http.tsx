@@ -59,7 +59,7 @@ export const handleResponse = (response: Response) => {
     delete eventDetails.id;
     console.log("postNewEvent", eventDetails);
     console.log("token", token)
-    const response = await fetch(defaultUrl+'event/user', {
+    const response = await fetch(defaultUrl+'event', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -102,7 +102,7 @@ export const handleResponse = (response: Response) => {
 
 
   export const getEvents = async (token: string): Promise<EventResponse[]> => {
-    const response = await fetch(defaultUrl+'event/user', {
+    const response = await fetch(defaultUrl+'event/all', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
