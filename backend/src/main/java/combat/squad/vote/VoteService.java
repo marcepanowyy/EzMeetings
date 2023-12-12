@@ -4,7 +4,10 @@ import combat.squad.auth.UserRepository;
 import combat.squad.proposal.ProposalEntity;
 import combat.squad.proposal.ProposalRepository;
 import combat.squad.auth.UserEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,9 +18,7 @@ import java.util.stream.Collectors;
 public class VoteService {
 
     private final VoteRepository voteRepository;
-
     private final UserRepository userRepository;
-
     private final ProposalRepository proposalRepository;
 
     public VoteService(VoteRepository voteRepository, UserRepository userRepository, ProposalRepository proposalRepository) {
@@ -32,49 +33,55 @@ public class VoteService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public List<VoteRo> vote(String userEmail, List<VoteDto> voteDtos){
 
-        UserEntity user = this.userRepository.findByEmail(userEmail);
+        Optional<UserEntity> user = this.userRepository.findByEmail(userEmail);
 
-        if (user == null) {
-            throw new IllegalArgumentException("User not found");
+        if (user.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "User not found");
         }
 
         return voteDtos.stream()
-                .map(voteDto -> this.createVote(voteDto, user))
+                .map(voteDto -> this.createVote(voteDto, user.get()))
                 .collect(Collectors.toList());
     }
 
     public VoteRo createVote(VoteDto voteDto, UserEntity voter) {
 
-        Optional<ProposalEntity> proposal = this.proposalRepository.findById(voteDto.proposalId());
+        ProposalEntity proposal = this.getProposalById(voteDto.proposalId());
+        Optional<VoteEntity> vote = this.voteRepository.findByVoterAndProposal(voter, proposal);
 
-        if(proposal.isEmpty()){
-            throw new IllegalArgumentException("Proposal not found");
-        }
+        // user has already voted on this proposal
 
-        VoteEntity vote = this.voteRepository.findByVoterAndProposal(voter, proposal.get());
+        if (vote.isPresent()) {
 
-        if (vote != null) {
-
-            // user has already voted on this proposal
-
-            vote.setState(voteDto.state());
-            vote = this.voteRepository.save(vote);
-            return this.toVoteRo(vote, false);
+            vote.get().setState(voteDto.state());
+            vote = Optional.of(this.voteRepository.save(vote.get()));
+            return this.toVoteRo(vote.get(), false);
 
         }
 
         // user has not voted on this proposal yet
 
-        vote = new VoteEntity(
+        vote = Optional.of(new VoteEntity(
                 voter,
-                proposal.get(),
+                proposal,
                 voteDto.state()
-        );
+        ));
 
-        vote = this.voteRepository.save(vote);
-        return this.toVoteRo(vote, false);
+        vote = Optional.of(this.voteRepository.save(vote.get()));
+        return this.toVoteRo(vote.get(), false);
+
+    }
+
+    public ProposalEntity getProposalById(UUID proposalId) {
+        return this.proposalRepository.findById(proposalId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Proposal not found"));
     }
 
     public VoteRo toVoteRo(VoteEntity voteEntity, Boolean showVoter) {

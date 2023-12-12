@@ -7,9 +7,12 @@ import combat.squad.proposal.ProposalService;
 import combat.squad.auth.UserEntity;
 import combat.squad.auth.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +24,6 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
-
     private final ProposalService proposalService;
 
     @Autowired
@@ -37,37 +39,23 @@ public class EventService {
                 .collect(Collectors.toList());
     }
 
-    public EventEntity getEventById(UUID id) {
-        return this.eventRepository.findById(id).orElseThrow();
-    }
-
     @Transactional
     public EventRo getEventDetails(String userEmail, UUID eventId) {
 
-        UserEntity user = this.userRepository.findByEmail(userEmail);
-
-        if (user == null) {
-            throw new IllegalArgumentException("User not found");
-        }
-
-        EventEntity event = this.eventRepository.findById(eventId).orElseThrow();
+        UserEntity user = getUserByEmail(userEmail);
+        EventEntity event = getEventById(eventId);
 
         if (!event.getParticipants().contains(user)) {
             throw new IllegalArgumentException("User is not participating in this event");
         }
 
-        return this.toEventRo(event, true, true, true, true);
-
+        return toEventRo(event, true, true, true, true);
     }
 
     @Transactional
     public List<EventRo> getAllUserEvents(String userEmail) {
 
-        UserEntity user = this.userRepository.findByEmail(userEmail);
-
-        if (user == null) {
-            throw new IllegalArgumentException("User not found");
-        }
+        UserEntity user = getUserByEmail(userEmail);
 
         return user.getEvents().stream()
                 .map(event -> toEventRo(event, false, true, false, false))
@@ -76,24 +64,16 @@ public class EventService {
 
     public List<EventRo> getCreatedUserEvents(String userEmail) {
 
-        UserEntity user = this.userRepository.findByEmail(userEmail);
-
-        if (user == null) {
-            throw new IllegalArgumentException("User not found");
-        }
+        UserEntity user = getUserByEmail(userEmail);
 
         return user.getCreatedEvents().stream()
                 .map(event -> toEventRo(event, false, false, false, false))
                 .collect(Collectors.toList());
     }
 
-    public EventRo createEvent(String userEmail, EventDto eventDto){
+    public EventRo createEvent(String userEmail, EventDto eventDto) {
 
-        UserEntity user = this.userRepository.findByEmail(userEmail);
-
-        if (user == null) {
-            throw new IllegalArgumentException("User not found");
-        }
+        UserEntity user = getUserByEmail(userEmail);
 
         EventEntity event = new EventEntity(
                 eventDto.name(),
@@ -106,7 +86,10 @@ public class EventService {
         List<ProposalDto> proposals = eventDto.eventProposals();
 
         if (proposals.isEmpty()) {
-            throw new IllegalArgumentException("Event must have at least one proposal");
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Event must have at least one proposal"
+            );
         }
 
         event = this.eventRepository.save(event);
@@ -118,7 +101,7 @@ public class EventService {
             proposalEntities.add(proposalEntity);
         }
 
-        event.getEventProposals().addAll(proposalEntities);
+        event.setEventProposals(proposalEntities);
         this.eventRepository.save(event);
 
         return this.toEventRo(event, true, false, false, false);
@@ -127,13 +110,14 @@ public class EventService {
     @Transactional
     public EventRo participateInEvent(String userEmail, UUID eventId) {
 
-        UserEntity user = this.userRepository.findByEmail(userEmail);
+        UserEntity user = getUserByEmail(userEmail);
+        EventEntity event = getEventById(eventId);
 
-        if (user == null) {
-            throw new IllegalArgumentException("User not found");
+        if (event.getParticipants().contains(user)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "User is already participating in this event");
         }
-
-        EventEntity event = this.eventRepository.findById(eventId).orElseThrow();
 
         event.getParticipants().add(user);
         this.eventRepository.save(event);
@@ -144,20 +128,34 @@ public class EventService {
         return this.toEventRo(event, true, true, false, false);
     }
 
+    private UserEntity getUserByEmail(String userEmail) {
+        return this.userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "User not found"));
+    }
+
+    private EventEntity getEventById(UUID eventId) {
+        return this.eventRepository.findById(eventId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Event not found"));
+    }
+
+
     public EventRo toEventRo(
             EventEntity event,
             Boolean showProposals,
             Boolean showCreator,
             Boolean showFinalProposalId,
             Boolean showVotes
-            ) {
-
+    ) {
         List<ProposalEntity> proposals = event.getEventProposals();
 
         Optional<List<ProposalRo>> proposalRoList = showProposals
                 ? Optional.of(proposals.stream()
-                        .map(proposal -> proposalService.toProposalRo(proposal, showVotes))
-                        .collect(Collectors.toList()))
+                .map(proposal -> proposalService.toProposalRo(proposal, showVotes))
+                .collect(Collectors.toList()))
                 : Optional.empty();
 
         Optional<UUID> creatorId = showCreator
@@ -181,8 +179,6 @@ public class EventService {
                 creatorId,
                 creatorEmail,
                 finalProposalId
-
         );
     }
-
 }

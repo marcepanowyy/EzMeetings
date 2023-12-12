@@ -1,8 +1,10 @@
 package combat.squad.auth.security;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -54,6 +58,20 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, status);
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        String error = status.getReasonPhrase();
+        LocalDateTime timestamp = LocalDateTime.now();
+
+        ErrorResponse errorResponse = new ErrorResponse(timestamp, status.value(), error, "Invalid JSON format, probably invalid date format");
+
+        return new ResponseEntity<>(errorResponse, status);
+    }
+
+    @Getter
     private static class ErrorResponse {
 
         private final LocalDateTime timestamp;
@@ -69,26 +87,6 @@ public class GlobalExceptionHandler {
             this.status = status;
             this.error = error;
             this.message = message;
-        }
-
-        public LocalDateTime getTimestamp() {
-            return timestamp;
-        }
-
-        public int getStatus() {
-            return status;
-        }
-
-        public String getError() {
-            return error;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public Map<String, String> getValidationErrors() {
-            return validationErrors;
         }
 
         public void setValidationErrors(Map<String, String> validationErrors) {

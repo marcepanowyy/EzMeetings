@@ -12,8 +12,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-// add pagination in the future :)
-
 @Service
 public class UserService implements UserDetailsService {
 
@@ -32,19 +30,22 @@ public class UserService implements UserDetailsService {
     }
 
     public UserEntity getUserById(UUID id) {
-        return this.userRepository.findById(id).orElseThrow();
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "User not found"));
     }
 
     public UserRo register(UserDto userDto) {
 
-        String email = userDto.email();
+        String userEmail = userDto.email();
 
-        Optional<UserEntity> existingUser = Optional.ofNullable(userRepository.findByEmail(email));
+        Optional<UserEntity> existingUser = this.userRepository.findByEmail(userEmail);
 
         if (existingUser.isPresent()) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "User with email " + email + " already exists"
+                    "User with email " + userEmail + " already exists"
             );
         }
 
@@ -61,44 +62,43 @@ public class UserService implements UserDetailsService {
 
     public UserRo login(UserDto userDto) {
 
-        String email = userDto.email();
+        String userEmail = userDto.email();
         String password = userDto.password();
 
-        UserEntity user = userRepository.findByEmail(email);
+        Optional<UserEntity> user = this.userRepository.findByEmail(userEmail);
 
-        if (user == null) {
+        if (user.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Invalid email or password");
+        }
+
+        if(!user.get().comparePassword(password)) {
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
                     "Invalid email or password"
             );
         }
 
-        if(!user.comparePassword(password)) {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
-                    "Invalid email or password"
-            );
-        }
-
-        return user.toUserRo(true);
+        return user.get().toUserRo(true);
 
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        UserEntity user = userRepository.findByEmail(username);
+        Optional<UserEntity> user = this.userRepository.findByEmail(username);
 
-        if(user == null) {
+        if (user.isEmpty()) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND,
                     "User not found");
         }
 
         return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                user.getPassword(),
-                user.getAuthorities()
+                user.get().getEmail(),
+                user.get().getPassword(),
+                user.get().getAuthorities()
         );
 
     }

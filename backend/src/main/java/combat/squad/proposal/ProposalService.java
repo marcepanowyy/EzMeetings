@@ -6,9 +6,12 @@ import combat.squad.event.EventService;
 import combat.squad.vote.VoteRo;
 import combat.squad.vote.VoteService;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.swing.text.html.Option;
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,29 +37,27 @@ public class ProposalService {
                 .collect(Collectors.toList());
     }
 
-    public ProposalRo getProposalById(UUID id) {
+    public ProposalEntity createProposal(@Valid ProposalDto proposalDTO, UUID eventId){
 
-        ProposalEntity proposal = this.proposalRepository.findById(id).orElseThrow();
-        return this.toProposalRo(proposal, true);
+        Optional<EventEntity> event = this.eventRepository.findById(eventId);
 
-    }
+        if (event.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Event not found");
+        }
 
-    public ProposalEntity createProposal(ProposalDto proposalDTO, UUID eventId){
-
-        EventEntity event = this.eventRepository.findById(eventId).orElseThrow();
-
-        ProposalEntity proposalEntity = new ProposalEntity(
-                event,
+        ProposalEntity proposal = new ProposalEntity(
+                event.get(),
                 proposalDTO.startDate()
         );
 
-        return this.proposalRepository.save(proposalEntity);
+        return this.proposalRepository.save(proposal);
     }
 
     public ProposalRo toProposalRo(
             ProposalEntity proposal,
             Boolean showVotes
-
     ) {
 
         Optional<List<VoteRo>> votes = showVotes
