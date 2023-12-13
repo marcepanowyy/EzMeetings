@@ -26,7 +26,6 @@ public class EventService {
     private final UserRepository userRepository;
     private final ProposalService proposalService;
 
-    @Autowired
     public EventService(EventRepository eventRepository, UserRepository userRepository, ProposalService proposalService) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
@@ -46,10 +45,15 @@ public class EventService {
         EventEntity event = getEventById(eventId);
 
         if (!event.getParticipants().contains(user)) {
-            throw new IllegalArgumentException("User is not participating in this event");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "User is not participating in this event");
         }
 
-        return toEventRo(event, true, true, true, true);
+        EventRo eventRo = toEventRo(event, true, true, true, true);
+
+//        toEventRo(event, true, true, true, true);
+            return eventRo;
     }
 
     @Transactional
@@ -128,7 +132,7 @@ public class EventService {
         return this.toEventRo(event, true, true, false, false);
     }
 
-    private UserEntity getUserByEmail(String userEmail) {
+    public UserEntity getUserByEmail(String userEmail) {
         return this.userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -142,7 +146,6 @@ public class EventService {
                         "Event not found"));
     }
 
-
     public EventRo toEventRo(
             EventEntity event,
             Boolean showProposals,
@@ -150,6 +153,7 @@ public class EventService {
             Boolean showFinalProposalId,
             Boolean showVotes
     ) {
+
         List<ProposalEntity> proposals = event.getEventProposals();
 
         Optional<List<ProposalRo>> proposalRoList = showProposals

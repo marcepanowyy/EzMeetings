@@ -64,7 +64,6 @@ public class ProposalService {
                 ? Optional.of(proposal.getVotes().stream().map(vote -> voteService.toVoteRo(vote, true)).toList())
                 : Optional.empty();
 
-
         return new ProposalRo(
                 proposal.getId(),
                 proposal.getStartDate(),

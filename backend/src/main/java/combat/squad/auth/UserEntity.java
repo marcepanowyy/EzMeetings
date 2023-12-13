@@ -1,5 +1,6 @@
 package combat.squad.auth;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import combat.squad.auth.security.JwtTokenProvider;
 import combat.squad.event.EventEntity;
 import combat.squad.event.EventRo;
