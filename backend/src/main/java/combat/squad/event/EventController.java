@@ -25,7 +25,7 @@ public class EventController {
     }
 
     @PostMapping
-    public EventRo createEvent(@RequestBody EventDto eventDto) {
+    public EventRo createEvent(@RequestBody @Valid EventDto eventDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return this.eventService.createEvent(authentication.getName(), eventDto);
     }
@@ -52,6 +52,12 @@ public class EventController {
     public EventRo participateInEvent(@PathVariable("id") UUID eventId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return this.eventService.participateInEvent(authentication.getName(), eventId);
+    }
+
+    @PutMapping("/{id}")
+    public EventRo updateEvent(@PathVariable("id") UUID eventId, @Valid @RequestBody EventDto eventDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return this.eventService.updateEvent(authentication.getName(), eventId, eventDto);
     }
 
 

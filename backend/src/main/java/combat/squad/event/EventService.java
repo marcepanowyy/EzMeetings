@@ -49,11 +49,7 @@ public class EventService {
                     HttpStatus.FORBIDDEN,
                     "User is not participating in this event");
         }
-
-        EventRo eventRo = toEventRo(event, true, true, true, true);
-
-//        toEventRo(event, true, true, true, true);
-            return eventRo;
+        return toEventRo(event, true, true, true, true);
     }
 
     @Transactional
@@ -87,9 +83,9 @@ public class EventService {
                 new ArrayList<>()
         );
 
-        List<ProposalDto> proposals = eventDto.eventProposals();
+        List<ProposalDto> proposalDtos = eventDto.eventProposals();
 
-        if (proposals.isEmpty()) {
+        if (proposalDtos.isEmpty()) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Event must have at least one proposal"
@@ -100,7 +96,7 @@ public class EventService {
 
         List<ProposalEntity> proposalEntities = new ArrayList<>();
 
-        for (ProposalDto proposalDTO : proposals) {
+        for (ProposalDto proposalDTO : proposalDtos) {
             ProposalEntity proposalEntity = this.proposalService.createProposal(proposalDTO, event.getId());
             proposalEntities.add(proposalEntity);
         }
@@ -130,6 +126,75 @@ public class EventService {
         this.userRepository.save(user);
 
         return this.toEventRo(event, true, true, false, false);
+    }
+
+    // for now only the creator can update the event
+
+    @Transactional
+    public EventRo updateEvent(String userEmail, UUID eventId, EventDto eventDto) {
+
+        UserEntity user = getUserByEmail(userEmail);
+        EventEntity event = getEventById(eventId);
+
+        if (!event.getCreator().getId().equals(user.getId())) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "User is not the creator of this event");
+        }
+
+        List<ProposalDto> proposalDtos = eventDto.eventProposals();
+
+        if (proposalDtos.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Event must have at least one proposal"
+            );
+        }
+
+        List<ProposalEntity> proposals = event.getEventProposals();
+
+        // check if proposal has any votes if so, then the update feature is not possible
+
+        for (ProposalEntity proposal : proposals) {
+
+            if (proposalDtos.stream().anyMatch(proposalDto -> proposalDto.startDate().equals(proposal.getStartDate()))) {
+
+                if (!proposal.getVotes().isEmpty()) {
+
+                    throw new ResponseStatusException(
+                            HttpStatus.BAD_REQUEST,
+                            "Proposal with start date " + proposal.getStartDate() + " has votes and cannot be updated"
+                    );
+                }
+            }
+        }
+
+        for (ProposalEntity proposal : proposals) {
+            this.proposalService.deleteProposal(proposal.getId());
+        }
+
+        List<ProposalEntity> newProposals = proposalDtos.stream()
+                .map(proposalDto -> this.proposalService.createProposal(proposalDto, event.getId()))
+                .collect(Collectors.toList());
+
+        event.setEventProposals(newProposals);
+
+        if (eventDto.name() != null) {
+            event.setName(eventDto.name());
+        }
+
+        if (eventDto.description() != null) {
+            event.setDescription(eventDto.description());
+        }
+
+        if (eventDto.location() != null) {
+            event.setLocation(eventDto.location());
+        }
+
+        this.eventRepository.save(event);
+
+        return this.toEventRo(event, true, false, false, false);
+
     }
 
     public UserEntity getUserByEmail(String userEmail) {
