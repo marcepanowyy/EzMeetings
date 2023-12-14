@@ -69,7 +69,7 @@ public class UserEntity implements UserDetails {
         this.password = passwordEncoder.encode(password);
     }
 
-    boolean comparePassword(String attempt){
+    public boolean comparePassword(String attempt){
         return passwordEncoder.matches(attempt, this.password);
     }
 

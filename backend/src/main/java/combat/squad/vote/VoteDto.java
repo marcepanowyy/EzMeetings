@@ -11,7 +11,7 @@ public record VoteDto(
         @NotNull(message = "Proposal id cannot be null")
         UUID proposalId,
 
-        @StateEnumValidation
+        @StateEnumValidation(message = "State must be one of the following: YES, IF_NEED_BE, NO")
         State state
 
 ) {
