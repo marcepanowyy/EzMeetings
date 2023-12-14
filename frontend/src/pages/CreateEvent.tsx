@@ -31,7 +31,7 @@ const CreateEvent: React.FC = () => {
               },
               onError: (error) => {
                   console.log(error);
-                  showFeedback('error', 'Wystąpił błąd!');
+                  showFeedback('error', error.message);
               }
           }
           )

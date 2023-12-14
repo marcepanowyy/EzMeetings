@@ -23,7 +23,7 @@ const EventDetails: React.FC = () => {
   const { id } = useParams();
   const token = getSimpleToken();  
   const { feedback,showFeedback } = useFeedbackReceive();
-
+  console.log(feedback)
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["events", id],
     queryFn: () => getEventDetails(id as string, token as string),
@@ -67,13 +67,14 @@ const EventDetails: React.FC = () => {
   const prepareVotesForSubmission = (
     proposalsFromData: EventProposal[]
   ): Vote[] => {
-    return proposalsFromData.map((proposal) => {
-      const foundProposal = proposals.find((p) => p.proposalId === proposal.id);
-      return {
-        proposalId: proposal.id as string,
-        state: foundProposal ? foundProposal.state : "NO",
-      };
-    });
+    return proposals
+      .filter(proposal => proposal.state !== "PENDING")
+      .map(proposal => {
+        return {
+          proposalId: proposal.proposalId,
+          state: proposal.state,
+        };
+      });
   };
 
   const submitVotes = async () => {

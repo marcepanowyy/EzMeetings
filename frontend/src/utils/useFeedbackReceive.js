@@ -1,21 +1,24 @@
 import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation ,useNavigate } from 'react-router-dom';
 import {useFeedback} from './useFeedback';
 
 const useFeedbackReceive = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { feedback, showFeedback } = useFeedback();
+  const { feedbackType, feedbackMessage } = location.state || {};
 
   useEffect(() => {
-    // Odczytanie typu i wiadomości feedbacku z przekazanego stanu
-    const { feedbackType, feedbackMessage } = location.state || {};
-
     if (feedbackType && feedbackMessage) {
       showFeedback(feedbackType, feedbackMessage);
-    }
-  }, [location.state, showFeedback]);
 
-  return { feedback,showFeedback};
+
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  
+  }, []); 
+
+  return { feedback, showFeedback };
 };
 
 export default useFeedbackReceive;
