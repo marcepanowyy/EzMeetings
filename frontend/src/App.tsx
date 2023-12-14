@@ -19,6 +19,7 @@ function App() {
       path: "/",
       element: <RootLayout />,
       loader: tokenLoader,
+      id: "root",
       children: [
         { index: true, element: <Home /> },
         {

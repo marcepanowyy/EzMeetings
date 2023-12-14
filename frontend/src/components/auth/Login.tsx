@@ -1,14 +1,26 @@
 import React from "react";
 import styles from "./AuthForms.module.css";
 import { emailValidator, passwordValidator } from "../../utils/validators";
-import useInput from "../../utils/use-input"; // Adjust the import path as necessary
+import useInput from "../../utils/use-input"; 
 import {Link, redirect,useNavigate} from 'react-router-dom';
 
-import { login } from '../../utils/http'; // Adjust the import path as necessary
-import { LoginRequest } from '../../models/api.models'; // Adjust the import path as necessary
+import { login } from '../../utils/http';
+import { LoginRequest } from '../../models/api.models'; 
+
+
+import { useFeedback } from '../../utils/useFeedback'; 
+import Feedback from "../../ui/Feedback/Feedback";
+import {useMutation} from '@tanstack/react-query';
+import LoadingOverlay from "../../ui/LoadingOverlay/LoadingOverlay";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const { feedback, showFeedback } = useFeedback();
+  const {mutate,isPending} = useMutation({
+    mutationFn:(loginDetails: LoginRequest)=> login(loginDetails)
+  })
+
+
   const {
     value: emailValue,
     isValid: emailIsValid,
@@ -36,14 +48,21 @@ const Login: React.FC = () => {
       email: emailValue,
       password: passwordValue,
     }; 
-    try {
-      await login(loginDetails);
-      navigate('/');
-      window.location.reload();
-    } catch (error) {
-      console.error("Login error:", error);
-    }
-  
+    
+      mutate(loginDetails,{
+        onSuccess: (response) => {
+            console.log(response);
+            navigate('/', { 
+              state: { 
+                feedbackType: 'success', 
+                feedbackMessage: 'Logged in successfully!',
+              }
+            });
+        },
+        onError: (error) => {
+            showFeedback('error', error.message); 
+        }
+      });
   };
   
 
@@ -51,6 +70,15 @@ const Login: React.FC = () => {
 
   return (
     <section className={styles.authSection}>
+      {isPending && <LoadingOverlay />}
+      {feedback && (
+        <Feedback
+          feedback={feedback}
+          clearFeedback={() => {
+            showFeedback && showFeedback(null, "");
+          }}
+        />
+      )}
       <div className={styles.authFormSection}>
         <h1 className={styles.authTitle}>Login</h1>
         <form onSubmit={formSubmitHandler}>
