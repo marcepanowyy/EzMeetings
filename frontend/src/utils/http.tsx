@@ -20,7 +20,9 @@ export const handleResponse = (response: Response) => {
       
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    return response.json();
+    const res = response.json();
+    console.log("response= ",res);
+    return res;
   }
   
 
@@ -122,6 +124,18 @@ export const handleResponse = (response: Response) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(personalVotes),
+    });
+    return handleResponse(response);
+  }
+
+
+  export const participateInEvent = async(eventId:string,token:string) => {
+    const response = await fetch(defaultUrl+'event/participate/'+eventId,{
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
     });
     return handleResponse(response);
   }

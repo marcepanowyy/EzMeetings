@@ -51,6 +51,7 @@ export interface LoginRequest {
   export interface EventResponse {
     id?: string;
     name: string;
+    creatorEmail?: string;
     description: string;
     location: string;
     eventProposals?: EventProposal[];
