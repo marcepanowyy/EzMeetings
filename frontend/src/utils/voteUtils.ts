@@ -6,13 +6,15 @@ export const getStateLabel = (currentState: string | null): string => {
         return 'YES (Click here)';
       case 'IF_NEED_BE':
         return 'IF_NEED_BE (Click here)';
-      default:
+      case 'NO':
         return 'NO (Click here)';
+      default:
+        return 'PENDING (Click here)';
     }
   };
 
   export const countVotes = (votes:EventVote[]) => {
-    const voteCounts:any = { YES: 0, NO: 0, IF_NEED_BE: 0 };
+    const voteCounts:any = { YES: 0, NO: 0, IF_NEED_BE: 0,PENDING:0 };
     votes.forEach(vote => {
       if (vote.state in voteCounts) {
         voteCounts[vote.state]++;
@@ -53,7 +55,8 @@ export const proposalVoteHandler = (proposals: Vote[], proposalId: string): Vote
   }
 };
 
-export const findCurrentProposalState = (proposals: Vote[], proposalId: string): string | null => {
+export const findCurrentProposalState = (proposals: Vote[], proposalId: string): string => {
   const currentProposal = proposals.find(p => p.proposalId === proposalId);
-  return currentProposal ? currentProposal.state : null;
+  return currentProposal ? currentProposal.state : "PENDING";
 };
+

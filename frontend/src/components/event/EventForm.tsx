@@ -16,15 +16,14 @@ import Feedback from "../../ui/Feedback/Feedback";
 
 const localizer = momentLocalizer(moment);
 const EventForm: React.FC<{
-
   event?: EventResponse;
   onSubmit: (eventData: EventResponse) => void;
   isPending?: boolean;
   feedback?: FeedbackMessage | null;
   showFeedback?: (type: FeedbackType, message: string) => void;
-
-}> = ({ event, onSubmit, isPending, feedback,showFeedback }) => {
-
+  editable?: boolean;
+}> = ({ event, onSubmit, isPending, feedback, showFeedback, editable }) => {
+  console.log(JSON.stringify(event));
 
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [name, setName] = useState<string>(event?.name || "");
@@ -84,6 +83,21 @@ const EventForm: React.FC<{
     };
 
   const handleSelectProposal = (proposal: CalendarEvent) => {
+    if (editable) {
+      const proposalWithVotes = event?.eventProposals?.find(
+        (p) => new Date(p.startDate) === proposal.start
+      );
+      if (
+        proposalWithVotes &&
+        proposalWithVotes.votes &&
+        proposalWithVotes.votes.length > 0
+      ) {
+        showFeedback &&
+          showFeedback("error", "Cannot delete a proposal with votes.");
+        return;
+      }
+    }
+
     setProposals(proposals.filter((e) => e.start !== proposal.start));
   };
 
@@ -108,7 +122,9 @@ const EventForm: React.FC<{
       {feedback && (
         <Feedback
           feedback={feedback}
-          clearFeedback={() => {showFeedback && showFeedback(null, "")}}
+          clearFeedback={() => {
+            showFeedback && showFeedback(null, "");
+          }}
         />
       )}
       <h2 className={styles.title}>{title}</h2>

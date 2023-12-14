@@ -23,7 +23,6 @@ const EventDetails: React.FC = () => {
   const { id } = useParams();
   const token = getSimpleToken();  
   const { feedback,showFeedback } = useFeedbackReceive();
-  console.log(feedback)
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["events", id],
     queryFn: () => getEventDetails(id as string, token as string),
@@ -46,6 +45,21 @@ const EventDetails: React.FC = () => {
 
   const [proposals, setProposals] = useState<Vote[]>([]);
 
+  useEffect(() => {
+    if (data && data.eventProposals) {
+      const userProposals = data.eventProposals.map(proposal => {
+        const userVote = proposal.votes?.find(vote => vote.voterEmail === email);
+        return {
+          proposalId: proposal.id ?? '', 
+          state: userVote ? userVote.state : "PENDING"
+        };
+      }).filter(proposal => proposal.proposalId); 
+      setProposals(userProposals as Vote[]);
+    }
+  }, [data, email]);
+
+  
+
   const formatDateAndTime = (dateString: string) => {
     const date = new Date(dateString);
     return `${date.toLocaleDateString()} at ${date.toLocaleTimeString([], {
@@ -57,12 +71,16 @@ const EventDetails: React.FC = () => {
   if (isLoading) return <div className={styles.loading}>Loading...</div>;
   if (isError && error)
     return <p className={styles.errorText}>Error: {error.message}</p>;
-  if (data) console.log(data);
+  //if (data) console.log(data);
   const handleVote = (proposalId: string) => {
     setProposals((currentProposals) =>
       proposalVoteHandler(currentProposals, proposalId)
     );
   };
+
+  
+  
+  
 
   const prepareVotesForSubmission = (
     proposalsFromData: EventProposal[]
@@ -80,7 +98,7 @@ const EventDetails: React.FC = () => {
   const submitVotes = async () => {
     if (!data || !data.eventProposals) return;
     const votesToSubmit = prepareVotesForSubmission(data.eventProposals);
-    console.log("submitVotes", votesToSubmit);
+    //console.log("submitVotes", votesToSubmit);
     try {
       await makeVote(token as string, votesToSubmit);
       // window.location.reload();

@@ -14,11 +14,11 @@
   }
   
   .success {
-    background-color: green;
+    background-color: rgb(21, 188, 21);
   }
   
   .error {
-    background-color: red;
+    background-color: rgb(148, 6, 6);
   }
   
   .closeButton {

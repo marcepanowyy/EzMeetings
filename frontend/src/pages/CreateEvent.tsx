@@ -27,7 +27,6 @@ const CreateEvent: React.FC = () => {
                       feedbackMessage: 'Wydarzenie zostało pomyślnie utworzone!' 
                     }
                   });
-                  //showFeedback('success', 'Operacja zakończona sukcesem!')
               },
               onError: (error) => {
                   console.log(error);
@@ -35,9 +34,7 @@ const CreateEvent: React.FC = () => {
               }
           }
           )
-      };
-
-   
+      }; 
   return <EventForm onSubmit={handleCreateEvent} isPending={isPending} feedback={feedback} showFeedback={showFeedback} />;
 };
 
