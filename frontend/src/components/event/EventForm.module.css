@@ -32,6 +32,9 @@
   width: 600px;
   align-items: center;
 }
+.createEventSection{
+  position: relative; 
+}
 
 .textInput {
   padding: 12px;

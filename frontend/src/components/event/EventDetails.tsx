@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getSimpleToken } from "../../utils/auth";
@@ -15,9 +15,15 @@ import {
 import { EventProposal } from "../../models/api.models";
 import { MyDecodedToken } from "../../models/MyDecodedToken.model";
 import { decodeToken } from "react-jwt";
+import Feedback from "../../ui/Feedback/Feedback";
+import  useFeedbackReceive  from "../../utils/useFeedbackReceive";
+
+
 const EventDetails: React.FC = () => {
   const { id } = useParams();
-  const token = getSimpleToken();
+  const token = getSimpleToken();  
+  const { feedback,showFeedback } = useFeedbackReceive();
+
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["events", id],
     queryFn: () => getEventDetails(id as string, token as string),
@@ -84,6 +90,12 @@ const EventDetails: React.FC = () => {
 
   return (
     <div className={styles.container}>
+      {feedback && (
+        <Feedback
+          feedback={feedback}
+          clearFeedback={() => {showFeedback && showFeedback(null, "")}}
+        />
+      )}
       {data && (
         <>
           <h2>{data.name}</h2>

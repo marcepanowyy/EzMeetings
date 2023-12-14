@@ -1,29 +1,44 @@
 import React from 'react';
 import EventForm from '../components/event/EventForm';
 import { EventResponse } from '../models/api.models';
-
 import {
     postNewEvent
 } from '../utils/http'
 import { getSimpleToken } from '../utils/auth';
 import { useNavigate } from 'react-router-dom';
+import {useMutation} from '@tanstack/react-query';
+import { useFeedback } from '../utils/useFeedback';
 
 const CreateEvent: React.FC = () => {
     const token = getSimpleToken();
     const navigate = useNavigate();
+    const { feedback, showFeedback } = useFeedback();
+    const {mutate,isPending} = useMutation({
+        mutationFn:(eventData: EventResponse)=> postNewEvent(eventData,token ?? '')
+    })
     const handleCreateEvent = async (eventData: EventResponse) => {
-        try {
-          const response = await postNewEvent(eventData, token ?? '');
-          navigate(`/events/${response.id}`);
-        } catch (error) {
-          console.error("Error during event creation:", error);
-        }
-
-        
+      
+          mutate(eventData,{
+              onSuccess: (response) => {
+                  console.log(response);
+                  navigate(`/events/${response.id}`, { 
+                    state: { 
+                      feedbackType: 'success', 
+                      feedbackMessage: 'Wydarzenie zostało pomyślnie utworzone!' 
+                    }
+                  });
+                  //showFeedback('success', 'Operacja zakończona sukcesem!')
+              },
+              onError: (error) => {
+                  console.log(error);
+                  showFeedback('error', 'Wystąpił błąd!');
+              }
+          }
+          )
       };
 
-
-  return <EventForm onSubmit={handleCreateEvent} />;
+   
+  return <EventForm onSubmit={handleCreateEvent} isPending={isPending} feedback={feedback} showFeedback={showFeedback} />;
 };
 
 export default CreateEvent;
