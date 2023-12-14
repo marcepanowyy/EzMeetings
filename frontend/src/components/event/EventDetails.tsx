@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery,useMutation } from "@tanstack/react-query";
 import { getSimpleToken } from "../../utils/auth";
 import { getEventDetails, makeVote } from "../../utils/http";
 import styles from "./EventDetails.module.css";
@@ -17,7 +17,7 @@ import { MyDecodedToken } from "../../models/MyDecodedToken.model";
 import { decodeToken } from "react-jwt";
 import Feedback from "../../ui/Feedback/Feedback";
 import  useFeedbackReceive  from "../../utils/useFeedbackReceive";
-
+import {queryClient} from '../../utils/http'
 
 const EventDetails: React.FC = () => {
   const { id } = useParams();
@@ -27,6 +27,19 @@ const EventDetails: React.FC = () => {
     queryKey: ["events", id],
     queryFn: () => getEventDetails(id as string, token as string),
   });
+
+  const {mutate,isPending} = useMutation({
+    mutationFn:(votes: Vote[])=> makeVote(token as string, votes),
+    onSuccess: (response) => {
+      console.log(response);
+      showFeedback("success", "Votes submitted successfully");
+      queryClient.invalidateQueries({queryKey: ["events", id]})
+    },
+    onError: (error) => {
+      console.log(error);
+      showFeedback("error", "Something went wrong");
+    },
+  })
 
   let email: string | null = null;
   let myDecodedToken: MyDecodedToken | null;
@@ -99,12 +112,8 @@ const EventDetails: React.FC = () => {
     if (!data || !data.eventProposals) return;
     const votesToSubmit = prepareVotesForSubmission(data.eventProposals);
     //console.log("submitVotes", votesToSubmit);
-    try {
-      await makeVote(token as string, votesToSubmit);
+      await mutate(votesToSubmit);
       // window.location.reload();
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   return (
