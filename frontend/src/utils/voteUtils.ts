@@ -13,6 +13,20 @@ export const getStateLabel = (currentState: string | null): string => {
     }
   };
 
+  export const getClass = (currentState: string | null): string => {
+    switch (currentState) {
+        case 'YES':
+            return 'voteYes';
+        case 'NO':
+            return 'voteNo';
+        case 'IF_NEED_BE':
+            return 'voteIfNeedBe';
+        default:
+            return 'labelPending';
+    }
+};
+
+
   export const countVotes = (votes:EventVote[]) => {
     const voteCounts:any = { YES: 0, NO: 0, IF_NEED_BE: 0,PENDING:0 };
     votes.forEach(vote => {
