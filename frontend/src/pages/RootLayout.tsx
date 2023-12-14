@@ -42,6 +42,8 @@ const RootLayout: React.FC = () => {
 
   const handleLogout = () => {
     submit(null, { action: "/logout", method: "post" });
+    //feedback
+    showFeedback("success", "Logout successful");
   };
 
   return (
