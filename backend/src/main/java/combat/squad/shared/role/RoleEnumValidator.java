@@ -9,7 +9,7 @@ public class RoleEnumValidator implements ConstraintValidator<RoleEnumValidation
     public boolean isValid(Role value, ConstraintValidatorContext context) {
 
         if (value == null) {
-            return true;
+            return false;
         }
 
         return value == Role.USER || value == Role.ADMIN;

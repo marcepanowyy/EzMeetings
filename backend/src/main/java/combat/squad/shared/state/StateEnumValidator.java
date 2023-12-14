@@ -8,7 +8,7 @@ public class StateEnumValidator implements ConstraintValidator<StateEnumValidati
     @Override
     public boolean isValid(State value, ConstraintValidatorContext context) {
         if (value == null) {
-            return true;
+            return false;
         }
         return value == State.YES || value == State.IF_NEED_BE || value == State.NO;
     }
