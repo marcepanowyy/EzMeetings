@@ -151,33 +151,53 @@ public class EventService {
             );
         }
 
-        List<ProposalEntity> proposals = event.getEventProposals();
+        List<ProposalEntity> existingProposals = event.getEventProposals();
+        List<ProposalEntity> proposalsToDelete = new ArrayList<>();
 
-        // check if proposal has any votes if so, then the update feature is not possible
+        // iterate over dtos, if an event has the same startDate as in dto - keep it, otherwise create a proposal.
+        // remove the remaining (those that are not in dto and have no votes).
 
-        for (ProposalEntity proposal : proposals) {
+        for (ProposalDto proposalDto : proposalDtos) {
 
-            if (proposalDtos.stream().anyMatch(proposalDto -> proposalDto.startDate().equals(proposal.getStartDate()))) {
+            Optional<ProposalEntity> existingProposal = existingProposals.stream()
+                    .filter(proposal -> proposal.getStartDate().equals(proposalDto.startDate()))
+                    .findFirst();
+
+            if (existingProposal.isEmpty()) {
+
+                ProposalEntity proposalEntity = this.proposalService.createProposal(proposalDto, event.getId());
+                existingProposals.add(proposalEntity);
+
+            }
+        }
+
+        // throw error if the proposal has votes
+
+        for (ProposalEntity proposal : existingProposals) {
+
+            if (proposalDtos.stream()
+                    .noneMatch(proposalDto -> proposalDto.startDate().equals(proposal.getStartDate()))) {
 
                 if (!proposal.getVotes().isEmpty()) {
 
                     throw new ResponseStatusException(
                             HttpStatus.BAD_REQUEST,
-                            "Proposal with start date " + proposal.getStartDate() + " has votes and cannot be updated"
+                            "Proposal has votes"
                     );
+
+                } else {
+                    proposalsToDelete.add(proposal);
                 }
             }
         }
 
-        for (ProposalEntity proposal : proposals) {
-            this.proposalService.deleteProposal(proposal.getId());
-        }
+        System.out.println(existingProposals.size());
+        System.out.println(proposalsToDelete.size());
 
-        List<ProposalEntity> newProposals = proposalDtos.stream()
-                .map(proposalDto -> this.proposalService.createProposal(proposalDto, event.getId()))
-                .collect(Collectors.toList());
+        existingProposals.removeAll(proposalsToDelete);
+        proposalsToDelete.forEach(proposal -> this.proposalService.deleteProposal(proposal.getId()));
 
-        event.setEventProposals(newProposals);
+        event.setEventProposals(existingProposals);
 
         if (eventDto.name() != null) {
             event.setName(eventDto.name());
