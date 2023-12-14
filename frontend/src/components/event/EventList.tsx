@@ -49,7 +49,7 @@ const EventList: React.FC = () => {
           name="eventId"
           value={eventId} 
           onChange={handleInputChange}
-          placeholder="Search event by ID"
+          placeholder="find event by ID"
         />
         <button className={styles.searchButton}>Participate</button>
       </form>

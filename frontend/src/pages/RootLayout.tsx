@@ -5,16 +5,24 @@ import { getTokenDuration } from "../utils/auth";
 import { decodeToken } from "react-jwt";
 import "./RootLayout.css";
 import { MyDecodedToken } from "../models/MyDecodedToken.model";
+import  useFeedbackReceive  from "../utils/useFeedbackReceive";
+import Feedback from "../ui/Feedback/Feedback";
+import { getSimpleToken } from "../utils/auth";
 const RootLayout: React.FC = () => {
-  const token = useLoaderData();
-
+   
+  let token = useLoaderData();
+  if (!token) {
+    token = getSimpleToken();
+  }
+  const { feedback,showFeedback } = useFeedbackReceive();
+  console.log(feedback)
   let email: string | null = null;
   let myDecodedToken: MyDecodedToken | null;
   if (token && typeof token === "string") {
     myDecodedToken = decodeToken<MyDecodedToken>(token);
     email = myDecodedToken?.sub ?? null;
   }
-
+ 
   const submit = useSubmit();
   useEffect(() => {
     if (!token) {
@@ -28,10 +36,14 @@ const RootLayout: React.FC = () => {
     setTimeout(() => {
       submit(null, { action: "/logout", method: "post" });
     }, tokenDuration);
+
+    
   }, [token, submit]);
 
   const handleLogout = () => {
     submit(null, { action: "/logout", method: "post" });
+    //feedback
+    showFeedback("success", "Logout successful");
   };
 
   return (
@@ -51,6 +63,12 @@ const RootLayout: React.FC = () => {
             </button>
           </div>
         </div>
+      )}
+      {feedback && (
+        <Feedback
+          feedback={feedback}
+          clearFeedback={() => {showFeedback && showFeedback(null, "")}}
+        />
       )}
       <Outlet />
     </div>

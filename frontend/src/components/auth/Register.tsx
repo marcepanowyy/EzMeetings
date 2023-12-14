@@ -6,8 +6,18 @@ import useInput from "../../utils/use-input";
 import {Link, useNavigate} from 'react-router-dom';
 import { RegisterRequest } from "../../models/api.models";
 import { register } from "../../utils/http";
+
+import { useFeedback } from '../../utils/useFeedback'; 
+import Feedback from "../../ui/Feedback/Feedback";
+import {useMutation} from '@tanstack/react-query';
+import LoadingOverlay from "../../ui/LoadingOverlay/LoadingOverlay";
+
 const Register: React.FC = () => {
   const navigate = useNavigate();
+  const { feedback, showFeedback } = useFeedback();
+  const {mutate,isPending} = useMutation({
+    mutationFn:(registerDetails: RegisterRequest)=> register(registerDetails)
+  })
   const {
     value: emailValue,
     isValid: emailIsValid,
@@ -45,19 +55,35 @@ const Register: React.FC = () => {
       password: passwordValue,
     };
    
-    try {
-      await register(registerDetails);
-      navigate('/');
-      window.location.reload();
-    } catch (error) {
-      console.error("Register error:", error);
-    }
+    mutate(registerDetails,{
+      onSuccess: (response) => {
+          console.log(response);
+          navigate('/', { 
+            state: { 
+              feedbackType: 'success', 
+              feedbackMessage: 'Registered successfully',
+            }
+          });
+      },
+      onError: (error) => {
+          showFeedback('error', error.message); 
+      }
+    });
     
     
   };
 
   return (
     <section className={styles.authSection}>
+      {isPending && <LoadingOverlay />}
+      {feedback && (
+        <Feedback
+          feedback={feedback}
+          clearFeedback={() => {
+            showFeedback && showFeedback(null, "");
+          }}
+        />
+      )}
       <div className={styles.authFormSection}>
         <h1 className={styles.authTitle}>Register</h1>
         <form onSubmit={formSubmitHandler}>

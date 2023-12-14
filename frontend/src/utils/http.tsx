@@ -37,7 +37,7 @@ export const handleResponse = (response: Response) => {
 
     const resData:AuthResponse = await handleResponse(response);
     const token = resData.token;
-    localStorage.setItem("token", token);
+    await localStorage.setItem("token", token);
     return token;
   }
   
@@ -77,7 +77,7 @@ export const handleResponse = (response: Response) => {
   export const putEvent = async (eventDetails: EventResponse, token: string): Promise<EventResponse> => {
     console.log("putEvent", eventDetails);
     console.log("token", token)
-    const response = await fetch(defaultUrl+'event/user', {
+    const response = await fetch(defaultUrl+'event/'+eventDetails.id, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
