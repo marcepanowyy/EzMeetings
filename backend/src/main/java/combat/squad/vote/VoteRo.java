@@ -1,6 +1,7 @@
 package combat.squad.vote;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import combat.squad.shared.state.State;
 
 import java.util.Date;
 import java.util.Optional;

@@ -191,9 +191,6 @@ public class EventService {
             }
         }
 
-        System.out.println(existingProposals.size());
-        System.out.println(proposalsToDelete.size());
-
         existingProposals.removeAll(proposalsToDelete);
         proposalsToDelete.forEach(proposal -> this.proposalService.deleteProposal(proposal.getId()));
 
