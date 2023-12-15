@@ -6,6 +6,7 @@ import {
   Event as CalendarEvent,
 } from "react-big-calendar";
 
+import { formatDateToISO } from "../../utils/date";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import styles from "./EventForm.module.css";
@@ -23,7 +24,7 @@ const EventForm: React.FC<{
   showFeedback?: (type: FeedbackType, message: string) => void;
   editable?: boolean;
 }> = ({ event, onSubmit, isPending, feedback, showFeedback, editable }) => {
-  console.log(JSON.stringify(event));
+  //console.log(JSON.stringify(event));
 
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [name, setName] = useState<string>(event?.name || "");
@@ -61,7 +62,7 @@ const EventForm: React.FC<{
     const end = new Date(slotInfo.start);
     end.setHours(end.getHours() + 1);
     // jesli end ma godzine wyższą niż 23:30 to zmieniamy na 23:59
-    console.log("end", end);
+    //console.log("end", end);
     if (start.getHours() >= 23) {
       return;
     }
@@ -85,7 +86,7 @@ const EventForm: React.FC<{
   const handleSelectProposal = (proposal: CalendarEvent) => {
     if (editable) {
       const proposalWithVotes = event?.eventProposals?.find(
-        (p) => new Date(p.startDate) === proposal.start
+        (p) => formatDateToISO(new Date(p.startDate)) === formatDateToISO(proposal?.start)
       );
       if (
         proposalWithVotes &&
@@ -97,7 +98,6 @@ const EventForm: React.FC<{
         return;
       }
     }
-
     setProposals(proposals.filter((e) => e.start !== proposal.start));
   };
 

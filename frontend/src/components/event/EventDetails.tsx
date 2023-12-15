@@ -110,11 +110,11 @@ const EventDetails: React.FC = () => {
   const submitVotes = async () => {
     if (!data || !data.eventProposals) return;
     const votesToSubmit = prepareVotesForSubmission(data.eventProposals);
+    //console.log("submitVotes", votesToSubmit);
     await mutate(votesToSubmit);
+    // window.location.reload();
   };
 
-  console.log("proposals object=",JSON.stringify(proposals));
-  console.log("data received from server=",JSON.stringify(data));
 
   return (
     <div className={styles.container}>
