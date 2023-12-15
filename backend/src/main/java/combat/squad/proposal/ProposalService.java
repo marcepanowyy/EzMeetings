@@ -55,6 +55,33 @@ public class ProposalService {
         return this.proposalRepository.save(proposal);
     }
 
+    public ProposalEntity deleteProposal(UUID proposalId) {
+
+        Optional<ProposalEntity> proposal = this.proposalRepository.findById(proposalId);
+
+        if (proposal.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Proposal not found");
+        }
+
+        this.proposalRepository.delete(proposal.get());
+        return proposal.get();
+
+    }
+
+    public ProposalEntity getProposalById(UUID proposalId) {
+
+        Optional<ProposalEntity> proposal = this.proposalRepository.findById(proposalId);
+
+        if (proposal.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Proposal not found");
+        }
+        return proposal.get();
+    }
+
     public ProposalRo toProposalRo(
             ProposalEntity proposal,
             Boolean showVotes
@@ -63,7 +90,6 @@ public class ProposalService {
         Optional<List<VoteRo>> votes = showVotes
                 ? Optional.of(proposal.getVotes().stream().map(vote -> voteService.toVoteRo(vote, true)).toList())
                 : Optional.empty();
-
 
         return new ProposalRo(
                 proposal.getId(),

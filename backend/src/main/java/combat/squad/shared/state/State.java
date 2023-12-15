@@ -1,4 +1,4 @@
-package combat.squad.vote;
+package combat.squad.shared.state;
 
 public enum State {
 

@@ -2,6 +2,7 @@ package combat.squad.vote;
 
 import combat.squad.proposal.ProposalEntity;
 import combat.squad.auth.UserEntity;
+import combat.squad.shared.state.State;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;

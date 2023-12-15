@@ -2,15 +2,10 @@ package combat.squad.auth;
 
 import combat.squad.auth.security.JwtTokenProvider;
 import combat.squad.event.EventEntity;
-import combat.squad.event.EventRo;
+import combat.squad.shared.role.Role;
 import combat.squad.vote.VoteEntity;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,7 +13,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.util.*;
@@ -75,7 +69,7 @@ public class UserEntity implements UserDetails {
         this.password = passwordEncoder.encode(password);
     }
 
-    boolean comparePassword(String attempt){
+    public boolean comparePassword(String attempt){
         return passwordEncoder.matches(attempt, this.password);
     }
 

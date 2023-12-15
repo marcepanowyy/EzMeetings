@@ -26,7 +26,6 @@ public class EventService {
     private final UserRepository userRepository;
     private final ProposalService proposalService;
 
-    @Autowired
     public EventService(EventRepository eventRepository, UserRepository userRepository, ProposalService proposalService) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
@@ -46,9 +45,10 @@ public class EventService {
         EventEntity event = getEventById(eventId);
 
         if (!event.getParticipants().contains(user)) {
-            throw new IllegalArgumentException("User is not participating in this event");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "User is not participating in this event");
         }
-
         return toEventRo(event, true, true, true, true);
     }
 
@@ -83,9 +83,9 @@ public class EventService {
                 new ArrayList<>()
         );
 
-        List<ProposalDto> proposals = eventDto.eventProposals();
+        List<ProposalDto> proposalDtos = eventDto.eventProposals();
 
-        if (proposals.isEmpty()) {
+        if (proposalDtos.isEmpty()) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Event must have at least one proposal"
@@ -96,7 +96,7 @@ public class EventService {
 
         List<ProposalEntity> proposalEntities = new ArrayList<>();
 
-        for (ProposalDto proposalDTO : proposals) {
+        for (ProposalDto proposalDTO : proposalDtos) {
             ProposalEntity proposalEntity = this.proposalService.createProposal(proposalDTO, event.getId());
             proposalEntities.add(proposalEntity);
         }
@@ -128,7 +128,93 @@ public class EventService {
         return this.toEventRo(event, true, true, false, false);
     }
 
-    private UserEntity getUserByEmail(String userEmail) {
+    // for now only the creator can update the event
+
+    @Transactional
+    public EventRo updateEvent(String userEmail, UUID eventId, EventDto eventDto) {
+
+        UserEntity user = getUserByEmail(userEmail);
+        EventEntity event = getEventById(eventId);
+
+        if (!event.getCreator().getId().equals(user.getId())) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "User is not the creator of this event");
+        }
+
+        List<ProposalDto> proposalDtos = eventDto.eventProposals();
+
+        if (proposalDtos.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Event must have at least one proposal"
+            );
+        }
+
+        List<ProposalEntity> existingProposals = event.getEventProposals();
+        List<ProposalEntity> proposalsToDelete = new ArrayList<>();
+
+        // iterate over dtos, if an event has the same startDate as in dto - keep it, otherwise create a proposal.
+        // remove the remaining (those that are not in dto and have no votes).
+
+        for (ProposalDto proposalDto : proposalDtos) {
+
+            Optional<ProposalEntity> existingProposal = existingProposals.stream()
+                    .filter(proposal -> proposal.getStartDate().equals(proposalDto.startDate()))
+                    .findFirst();
+
+            if (existingProposal.isEmpty()) {
+
+                ProposalEntity proposalEntity = this.proposalService.createProposal(proposalDto, event.getId());
+                existingProposals.add(proposalEntity);
+
+            }
+        }
+
+        // throw error if the proposal has votes
+
+        for (ProposalEntity proposal : existingProposals) {
+
+            if (proposalDtos.stream()
+                    .noneMatch(proposalDto -> proposalDto.startDate().equals(proposal.getStartDate()))) {
+
+                if (!proposal.getVotes().isEmpty()) {
+
+                    throw new ResponseStatusException(
+                            HttpStatus.BAD_REQUEST,
+                            "Proposal has votes"
+                    );
+
+                } else {
+                    proposalsToDelete.add(proposal);
+                }
+            }
+        }
+
+        existingProposals.removeAll(proposalsToDelete);
+        proposalsToDelete.forEach(proposal -> this.proposalService.deleteProposal(proposal.getId()));
+
+        event.setEventProposals(existingProposals);
+
+        if (eventDto.name() != null) {
+            event.setName(eventDto.name());
+        }
+
+        if (eventDto.description() != null) {
+            event.setDescription(eventDto.description());
+        }
+
+        if (eventDto.location() != null) {
+            event.setLocation(eventDto.location());
+        }
+
+        this.eventRepository.save(event);
+
+        return this.toEventRo(event, true, false, false, false);
+
+    }
+
+    public UserEntity getUserByEmail(String userEmail) {
         return this.userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -142,7 +228,6 @@ public class EventService {
                         "Event not found"));
     }
 
-
     public EventRo toEventRo(
             EventEntity event,
             Boolean showProposals,
@@ -150,6 +235,7 @@ public class EventService {
             Boolean showFinalProposalId,
             Boolean showVotes
     ) {
+
         List<ProposalEntity> proposals = event.getEventProposals();
 
         Optional<List<ProposalRo>> proposalRoList = showProposals
