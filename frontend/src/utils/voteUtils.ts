@@ -41,6 +41,8 @@ export const getStateLabel = (currentState: string | null): string => {
   export const getNextState = (currentState: string): string => {
     switch (currentState) {
       case "NO":
+        return "PENDING";
+      case "PENDING":
         return "YES";
       case "YES":
         return "IF_NEED_BE";
@@ -54,20 +56,20 @@ export const getStateLabel = (currentState: string | null): string => {
   
 
 
-export const proposalVoteHandler = (proposals: Vote[], proposalId: string): Vote[] => {
-  const existingVoteIndex = proposals.findIndex(vote => vote.proposalId === proposalId);
-
-  if (existingVoteIndex === -1) {
-    return [...proposals, { proposalId, state: "YES" }];
-  } else {
-    return proposals.map((vote, index) => {
-      if (index === existingVoteIndex) {
-        return { ...vote, state: getNextState(vote.state) };
+  export const proposalVoteHandler = (proposals: Vote[], proposalId: string): Vote[] => {
+    const existingVoteIndex = proposals.findIndex(vote => vote.proposalId === proposalId);
+  
+    if (existingVoteIndex === -1) {
+      return [...proposals, { proposalId, state: "YES" }];
+    } else {
+      const updatedVote = { ...proposals[existingVoteIndex], state: getNextState(proposals[existingVoteIndex].state) };
+      if (updatedVote.state === "PENDING") {
+        return proposals.filter((_, index) => index !== existingVoteIndex);
+      } else {
+        return proposals.map((vote, index) => index === existingVoteIndex ? updatedVote : vote);
       }
-      return vote;
-    });
-  }
-};
+    }
+  };
 
 export const findCurrentProposalState = (proposals: Vote[], proposalId: string): string => {
   const currentProposal = proposals.find(p => p.proposalId === proposalId);

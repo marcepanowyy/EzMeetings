@@ -15,6 +15,15 @@ export function getTokenDuration() {
     return duration;
 }
 
+export function getEmailFromToken(token){
+    if(!token)return null;
+    const decoded = decodeToken(token);
+    if (!decoded || !decoded.sub) {
+        return null;
+    }
+    return decoded.sub;
+}
+
 export function getAuthToken() {
     const token = localStorage.getItem('token');
     if(!token)return null;
