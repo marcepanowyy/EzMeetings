@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/vote")
@@ -22,10 +23,10 @@ public class VoteController {
         return this.voteService.getVotes();
     }
 
-    @PostMapping
-    public List<VoteRo> vote(@RequestBody List<VoteDto> voteDtos) {
+    @PostMapping("{id}")
+    public List<VoteRo> vote(@PathVariable("id") UUID eventId, @RequestBody List<VoteDto> voteDtos) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return this.voteService.vote(authentication.getName(), voteDtos);
+        return this.voteService.vote(authentication.getName(), eventId, voteDtos);
     }
 
 

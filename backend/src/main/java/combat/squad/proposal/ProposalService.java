@@ -2,15 +2,12 @@ package combat.squad.proposal;
 
 import combat.squad.event.EventEntity;
 import combat.squad.event.EventRepository;
-import combat.squad.event.EventService;
 import combat.squad.vote.VoteRo;
 import combat.squad.vote.VoteService;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.swing.text.html.Option;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -55,31 +52,20 @@ public class ProposalService {
         return this.proposalRepository.save(proposal);
     }
 
-    public ProposalEntity deleteProposal(UUID proposalId) {
+    public void deleteProposal(UUID proposalId) {
 
-        Optional<ProposalEntity> proposal = this.proposalRepository.findById(proposalId);
-
-        if (proposal.isEmpty()) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Proposal not found");
-        }
-
-        this.proposalRepository.delete(proposal.get());
-        return proposal.get();
+        ProposalEntity proposal = getProposalById(proposalId);
+        this.proposalRepository.delete(proposal);
 
     }
 
     public ProposalEntity getProposalById(UUID proposalId) {
 
-        Optional<ProposalEntity> proposal = this.proposalRepository.findById(proposalId);
+        return proposalRepository.findById(proposalId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Proposal not found"));
 
-        if (proposal.isEmpty()) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Proposal not found");
-        }
-        return proposal.get();
     }
 
     public ProposalRo toProposalRo(
