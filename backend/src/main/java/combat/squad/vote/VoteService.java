@@ -47,11 +47,7 @@ public class VoteService {
     @Transactional
     public List<VoteRo> vote(String userEmail, UUID eventId, List<VoteDto> voteDtos){
 
-        if(voteDtos.isEmpty()) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "No votes provided");
-        }
+        // if voteDtos is empty - revoke all votes cast for this event
 
         UserEntity user = this.getUserByEmail(userEmail);
         EventEntity event = this.getEventById(eventId);
@@ -68,9 +64,6 @@ public class VoteService {
                 .filter(vote -> voteDtos.stream()
                         .noneMatch(voteDto -> voteDto.proposalId().equals(vote.getProposal().getId())))
                 .toList();
-
-        System.out.println("existingVotes: " + existingVotes.size());
-        System.out.println("votesToDelete: " + votesToDelete.size());
 
         // delete votes that are not in the list of votes to create (or update if they already exist)
 
