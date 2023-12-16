@@ -23,7 +23,10 @@ const useInput = (validateValue) => {
   const hasError = !valueIsValid && inputState.isTouched;
 
   const valueChangeHandler = (event) => {
-    dispatch({ type: "INPUT", val: event.target.value });
+    // if event is simply string, then we can use event directly
+    // if event is object, then we can use event.target.value
+    const eventValue = event.target ? event.target.value : event;
+    dispatch({ type: "INPUT", val: eventValue });
   };
 
   const inputBlurHandler = (event) => {

@@ -86,6 +86,8 @@ Aby pobrać moduły node.js należy wpisać w terminalu:
 ```
 npm install
 ```
+Uwaga! Projekt został tworzony przy użyciu `Node wersji 16.17.0` (zalecana wersja)
+
 Pozwoli nam to załadować wszystkie potrzebne biblioteki. Następnie wpisujemy:
 ```
 npm start

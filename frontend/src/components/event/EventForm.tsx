@@ -6,6 +6,7 @@ import {
   Event as CalendarEvent,
 } from "react-big-calendar";
 
+import { formatDateToISO } from "../../utils/date";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import styles from "./EventForm.module.css";
@@ -13,6 +14,14 @@ import LoadingOverlay from "../../ui/LoadingOverlay/LoadingOverlay";
 import { EventResponse, Proposal } from "../../models/api.models";
 import { FeedbackMessage, FeedbackType } from "../../models/feedback.model";
 import Feedback from "../../ui/Feedback/Feedback";
+import useInput from "../../utils/use-input";
+
+const validateName = (name: string) =>
+  name.trim().length >= 3 && name.trim().length <= 15;
+const validateDescription = (description: string) =>
+  description.trim().length >= 20 && description.trim().length <= 200;
+const validateLocation = (location: string) =>
+  location.trim().length >= 3 && location.trim().length <= 20;
 
 const localizer = momentLocalizer(moment);
 const EventForm: React.FC<{
@@ -23,15 +32,42 @@ const EventForm: React.FC<{
   showFeedback?: (type: FeedbackType, message: string) => void;
   editable?: boolean;
 }> = ({ event, onSubmit, isPending, feedback, showFeedback, editable }) => {
-  console.log(JSON.stringify(event));
+  //console.log(JSON.stringify(event));
 
   const [proposals, setProposals] = useState<Proposal[]>([]);
-  const [name, setName] = useState<string>(event?.name || "");
-  const [description, setDescription] = useState<string>(
-    event?.description || ""
-  );
-  const [location, setLocation] = useState<string>(event?.location || "");
+  // const [name, setName] = useState<string>(event?.name || "");
+  // const [description, setDescription] = useState<string>(
+  //   event?.description || ""
+  // );
+  // const [location, setLocation] = useState<string>(event?.location || "");
   const title = event ? "Edit Event" : "Create Event";
+
+  const {
+    value: nameValue,
+    hasError: nameHasError,
+    isValid: nameIsValid,
+    valueChangeHandler: nameChanged,
+    inputBlurHandler: nameBlurred,
+    reset: resetName,
+  } = useInput(validateName);
+
+  const {
+    value: descriptionValue,
+    hasError: descriptionHasError,
+    isValid: descriptionIsValid,
+    valueChangeHandler: descriptionChanged,
+    inputBlurHandler: descriptionBlurred,
+    reset: resetDescription,
+  } = useInput(validateDescription);
+
+  const {
+    value: locationValue,
+    hasError: locationHasError,
+    isValid: locationIsValid,
+    valueChangeHandler: locationChanged,
+    inputBlurHandler: locationBlurred,
+    reset: resetLocation,
+  } = useInput(validateLocation);
 
   useEffect(() => {
     if (event?.eventProposals) {
@@ -46,11 +82,17 @@ const EventForm: React.FC<{
         title: event.name,
       }));
       setProposals(initialProposals);
+      locationChanged(event?.location || "");
+      descriptionChanged(event?.description || "");
+      nameChanged(event?.name || "");
     }
   }, [event]);
 
   const isSubmitDisabled =
-    !name || !description || !location || proposals.length === 0;
+    proposals.length === 0 ||
+    !nameIsValid ||
+    !descriptionIsValid ||
+    !locationIsValid;
 
   const handleSelectSlot = (slotInfo: SlotInfo) => {
     const now = new Date();
@@ -60,8 +102,6 @@ const EventForm: React.FC<{
     }
     const end = new Date(slotInfo.start);
     end.setHours(end.getHours() + 1);
-    // jesli end ma godzine wyższą niż 23:30 to zmieniamy na 23:59
-    console.log("end", end);
     if (start.getHours() >= 23) {
       return;
     }
@@ -76,16 +116,12 @@ const EventForm: React.FC<{
     setProposals([...proposals, newProposal]);
   };
 
-  const handleInputChange =
-    (setter: React.Dispatch<React.SetStateAction<string>>) =>
-    (proposal: ChangeEvent<HTMLInputElement>) => {
-      setter(proposal.target.value);
-    };
-
   const handleSelectProposal = (proposal: CalendarEvent) => {
     if (editable) {
       const proposalWithVotes = event?.eventProposals?.find(
-        (p) => new Date(p.startDate) === proposal.start
+        (p) =>
+          formatDateToISO(new Date(p.startDate)) ===
+          formatDateToISO(proposal?.start)
       );
       if (
         proposalWithVotes &&
@@ -97,7 +133,6 @@ const EventForm: React.FC<{
         return;
       }
     }
-
     setProposals(proposals.filter((e) => e.start !== proposal.start));
   };
 
@@ -105,14 +140,15 @@ const EventForm: React.FC<{
     e.preventDefault();
     const eventData: EventResponse = {
       id: event?.id || "",
-      name,
-      description,
-      location,
+      name: nameValue,
+      description: descriptionValue,
+      location: locationValue,
       eventProposals: proposals.map((proposal) => ({
         id: proposal.id,
         startDate: proposal.start.toISOString(),
       })),
     };
+    console.log("proposals", event?.eventProposals);
     onSubmit(eventData);
   };
 
@@ -133,24 +169,44 @@ const EventForm: React.FC<{
           <input
             className={styles.textInput}
             type="text"
-            value={name}
-            onChange={handleInputChange(setName)}
+            value={nameValue}
+            onChange={nameChanged}
+            onBlur={nameBlurred}
             placeholder="Name"
           />
+          {nameHasError && (
+            <p className={styles.errorText}>
+              Name must be between 3 and 15 characters long
+            </p>
+          )}
+
           <input
             className={styles.textInput}
             type="text"
-            value={description}
-            onChange={handleInputChange(setDescription)}
+            value={descriptionValue}
+            onChange={descriptionChanged}
+            onBlur={descriptionBlurred}
             placeholder="Description"
           />
+          {descriptionHasError && (
+            <p className={styles.errorText}>
+              Description must be between 20 and 200 characters long
+            </p>
+          )}
+
           <input
             className={styles.textInput}
             type="text"
-            value={location}
-            onChange={handleInputChange(setLocation)}
+            value={locationValue}
+            onChange={locationChanged}
+            onBlur={locationBlurred}
             placeholder="Location"
           />
+          {locationHasError && (
+            <p className={styles.errorText}>
+              Location must be between 3 and 20 characters long
+            </p>
+          )}
           <p className={styles.hint}>
             Click on a time slot in the calendar to add a time. Click on a time
             to remove it.
