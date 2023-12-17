@@ -30,7 +30,7 @@ const EventDetails: React.FC = () => {
   });
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (votes: Vote[]) => makeVote(token as string, votes),
+    mutationFn: (votes: Vote[]) => makeVote(token as string, votes,id as string),
     onSuccess: (response) => {
       console.log(response);
       showFeedback("success", "Votes submitted successfully");

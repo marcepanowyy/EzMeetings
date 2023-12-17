@@ -114,10 +114,10 @@ export const handleResponse = (response: Response) => {
     return handleResponse(response);
   }
 
-  export const makeVote = async(token:string,personalVotes:Vote[]) => {
+  export const makeVote = async(token:string,personalVotes:Vote[],eventId:string) => {
     console.log("makeVote:", personalVotes);
     console.log("------------------------")
-    const response = await fetch(defaultUrl+'vote',{
+    const response = await fetch(defaultUrl+'vote/'+eventId,{
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
