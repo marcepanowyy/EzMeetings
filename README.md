@@ -7,19 +7,27 @@ Główną funkcjonalnością będzie umożliwienie użytkownikom tworzenia wydar
 Zaproszeni uczestnicy będą mieli możliwość głosowania na preferowane terminy, co pozwoli ustalić ostateczną i 
 odpowiednią dla wszystkich datę wydarzenia.
 
+Najważeniejsze feature'y:
+* tworzenie wydarzeń 
+* rejestracja i logowanie użytkowników
+* zapisywanie użytkowników na wydarzenia
+* głosowanie na preferowane terminy
+* wybór ostatecznego terminu wydarzenia
+* zarządzanie wydarzeniami - edycja i usuwanie (tylko dla twórcy wydarzenia)
+
 ### Plan działań:
-* testy na backendzie i frontendzie
-* nowa relacja event -> participants (many to many)
-* dodanie opcji uczestnictwa w evencie podajac id wydarzenia
+* dodanie brakujących testów na backendzie i frontendzie
+* zaimplementowanie usuwania eventu
+* wybór preferowanego terminu przez twórcę wydarzenia
+* dodanie dokumentacji API (Swagger)
 
 ### Technologie
 
-Spring Boot, JPA (Hibernate), PostreSQL - backend
-React - frontend
+* PostgreSQL - baza danych
+* Spring Boot, JPA (Hibernate) - backend
+* React - frontend
 
 ### Schemat bazy danych 
-
-poprawić schemat bazy danych, gdy doda się nową relację
 
 ![db_diagram.jpg](assets/db_diagram.png)
 
@@ -52,13 +60,12 @@ Aby uruchomic aplikację należy najpierw postawić bazę danych. Proponujemy je
     Należy pamiętać, aby w pliku application.properties zmienić dane logowania do bazy danych na te, które podaliśmy przy uruchamianiu kontenera.
     
     ```properties
-    spring.datasource.username=postgres
-    spring.datasource.password="twoje hasło"
+    spring.datasource.username=username
+    spring.datasource.password="password"
     ```
     
     Jeśli występują problemy, kierujemy do [oficjalnej dokumentacji](https://www.docker.com/blog/how-to-use-the-postgres-docker-official-image/) lub skorzystanie z drugiego sposobu
 
-<br>
 
 2) Pobranie PostgreSQL i użycie PgAdmina
 
@@ -70,36 +77,27 @@ Aby uruchomic aplikację należy najpierw postawić bazę danych. Proponujemy je
 
 #### Backend
 
-Importujemy folder 'backend' do Intellij: File -> Open.. Czekamy, aż Gradle pobierze wszystkie zależności i 
+Importujemy folder *backend* do Intellij: File -> Open.. Czekamy, aż Gradle pobierze wszystkie zależności i 
 zbuduje projekt. Aby uruchomić aplikację korzystamy z polecenia "Run" na klasie CombatSquadApplication (zielona strzałka)
 
 Aplikacja powinna się uruchomić na porcie 8080
 
 Aby przetestować działanie aplikacji korzystamy z test runnera (zielona strzałka obok nazwy klasy testowej)
-- narazie nie beda dzialac testy
 
 #### Frontend
 
-Importujemy folder 'frontend' do Webstorm lub VS Code: File -> Open.. 
+Aby uruchomić aplikację frontendową należy najpierw zainstalować node.js (https://nodejs.org/en/)
+Projekt został stworzony przy użyciu wersji 16.17.0 jednak będzie działać również na wyższych wersjach.
+
+Importujemy folder *frontend* do Webstorm lub VS Code: File -> Open.. 
 
 Aby pobrać moduły node.js należy wpisać w terminalu:
 ```
 npm install
 ```
-Uwaga! Projekt został tworzony przy użyciu `Node wersji 16.17.0` (zalecana wersja)
-
 Pozwoli nam to załadować wszystkie potrzebne biblioteki. Następnie wpisujemy:
 ```
 npm start
 ```
 
 Aplikacja powinna się uruchomić na porcie 3000.
-
-Podstawowe routy:
-* /login - logowanie
-* /register - rejestracja
-* /events - lista wydarzeń (dostępna po zalogowaniu) z możliwością zarządzania nimi
-* /events/:id - szczegóły wydarzenia (dostępna dla wszystkich)
-* /events/:id/edit - edycja wydarzenia (dostępna dla twórcy wydarzenia)
-* /events/new- tworzenie wydarzenia (dostępna po zalogowaniu)
-
