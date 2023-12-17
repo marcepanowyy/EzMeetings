@@ -9,7 +9,7 @@ public record ProposalDto(
 
         @NotNull(message = "Start date cannot be null")
         @FutureOrPresent(message = "Start date must be present or future date")
-        @DateTimeFormat(pattern = DATE_FORMAT)
+//        @DateTimeFormat(pattern = DATE_FORMAT)
         Date startDate
 
 ) {

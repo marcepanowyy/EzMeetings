@@ -159,8 +159,16 @@ public class EventService {
 
         for (ProposalDto proposalDto : proposalDtos) {
 
+            // Existing Proposal: 2023-12-18 03:30:00.0
+            // Proposal Dto: Mon Dec 18 03:30:00 CET 2023
+
             Optional<ProposalEntity> existingProposal = existingProposals.stream()
-                    .filter(proposal -> proposal.getStartDate().equals(proposalDto.startDate()))
+                    .filter(proposal -> proposal
+                            .getStartDate()
+                            .toInstant()
+                            .equals(proposalDto
+                                    .startDate()
+                                    .toInstant()))
                     .findFirst();
 
             if (existingProposal.isEmpty()) {

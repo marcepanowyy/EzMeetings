@@ -29,5 +29,4 @@ public class VoteController {
         return this.voteService.vote(authentication.getName(), eventId, voteDtos);
     }
 
-
 }
