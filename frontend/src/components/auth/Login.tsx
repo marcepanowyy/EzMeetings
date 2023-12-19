@@ -60,7 +60,8 @@ const Login: React.FC = () => {
             });
         },
         onError: (error) => {
-            showFeedback('error', error.message); 
+          console.log("MY ERROR!!!!!",error.stack); 
+         // showFeedback('error', error); 
         }
       });
   };

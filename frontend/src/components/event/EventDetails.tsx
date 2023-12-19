@@ -20,6 +20,8 @@ import Feedback from "../../ui/Feedback/Feedback";
 import useFeedbackReceive from "../../utils/useFeedbackReceive";
 import { queryClient } from "../../utils/http";
 import LoadingOverlay from "../../ui/LoadingOverlay/LoadingOverlay";
+import CopyButton from "../../ui/Button/CopyButton/CopyButton";
+import EditButton from "../../ui/Button/EditButton/EditButton";
 const EventDetails: React.FC = () => {
   const { id } = useParams();
   const token = getSimpleToken();
@@ -48,12 +50,18 @@ const EventDetails: React.FC = () => {
     myDecodedToken = decodeToken<MyDecodedToken>(token);
     email = myDecodedToken?.sub ?? null;
   }
-  const EditButton = (
+  const EditBtn = (
     <div className={styles.editButton}>
-      <FaEdit />{" "}
-      <Link to="edit">
-        <span>Edit Event</span>
-      </Link>
+      <EditButton eventId={id as string} />
+    </div>
+  );
+
+    
+  
+
+  const CopyBtn = (
+    <div className={styles.copyButton}>
+      <CopyButton copyText={id as string} />
     </div>
   );
 
@@ -132,7 +140,10 @@ const EventDetails: React.FC = () => {
           <h2>{data.name}</h2>
           <p className={styles.location}>Location: {data.location}</p>
           <p className={styles.description}>{data.description}</p>
-          {data.creatorEmail == email ? EditButton : null}
+          <div className={styles.creatorActions}>
+          {data.creatorEmail == email ? EditBtn : null}
+          {data.creatorEmail == email ? CopyBtn : null}
+          </div>
           <div className={styles.sliderContainer}>
             {data.eventProposals && data.eventProposals.length > 0 && (
               <div className={styles.proposalsGrid}>

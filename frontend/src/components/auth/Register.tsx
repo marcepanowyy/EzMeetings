@@ -18,6 +18,7 @@ const Register: React.FC = () => {
   const {mutate,isPending} = useMutation({
     mutationFn:(registerDetails: RegisterRequest)=> register(registerDetails)
   })
+
   const {
     value: emailValue,
     isValid: emailIsValid,
@@ -70,7 +71,7 @@ const Register: React.FC = () => {
       }
     });
     
-    
+ 
   };
 
   return (

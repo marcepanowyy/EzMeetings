@@ -139,9 +139,14 @@
     background-color: var(--button-background-hover); /* Darker green on hover */
 }
 
-  
+.creatorActions{
+    display:flex;
+    flex-direction:row;
+    justify-content:space-around;
+    width:100%;
+    margin:2em;
+}
 
-/* Responsive styles */
 @media (max-width: 600px) {
     .container {
         padding: 10px;
@@ -160,3 +165,5 @@
         padding: 10px;
     }
 }
+
+
