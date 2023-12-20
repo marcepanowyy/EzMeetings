@@ -1,0 +1,39 @@
+
+
+
+.button {
+    background-color: #fff;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    color: #586069;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 20px;
+    margin-left: 8px;
+    padding: 3px 10px;
+    vertical-align: middle;
+    white-space: nowrap;
+    min-width:10em;
+    text-decoration:none;
+    
+}
+
+.active{
+    background-color: #fff;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    color: #586069;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 20px;
+    margin-left: 8px;
+    padding: 3px 10px;
+    vertical-align: middle;
+    white-space: nowrap;
+    background-color: #28a745;
+    border-color: #28a745;
+    color: #fff;
+}
+

@@ -1,19 +1,32 @@
 package combat.squad.vote;
 
 import combat.squad.proposal.ProposalEntity;
-import combat.squad.user.UserEntity;
+import combat.squad.auth.UserEntity;
+import combat.squad.shared.state.State;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.UUID;
 
 @Entity
+@Data
+@NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "votes")
 public class VoteEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    private UUID id;
 
     @ManyToOne
     private UserEntity voter;
@@ -24,46 +37,13 @@ public class VoteEntity {
     @CreatedDate
     private Date created;
 
-    private String state;
+    @Enumerated(EnumType.STRING)
+    private State state;
 
-    public VoteEntity(UserEntity voter, ProposalEntity proposal, String state) {
+    public VoteEntity(UserEntity voter, ProposalEntity proposal, State state) {
         this.voter = voter;
         this.proposal = proposal;
         this.state = state;
     }
 
-    public VoteEntity() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public UserEntity getVoter() {
-        return voter;
-    }
-
-    public void setVoter(UserEntity voter) {
-        this.voter = voter;
-    }
-
-    public ProposalEntity getProposal() {
-        return proposal;
-    }
-
-    public void setProposal(ProposalEntity proposal) {
-        this.proposal = proposal;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
 }

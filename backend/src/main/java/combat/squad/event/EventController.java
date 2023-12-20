@@ -1,8 +1,13 @@
 package combat.squad.event;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/event")
@@ -15,28 +20,45 @@ public class EventController {
     }
 
     @GetMapping
-    public List<EventEntity> getEvents() {
+    public List<EventRo> getEvents() {
         return this.eventService.getEvents();
     }
 
-    @GetMapping("{id}")
-    public EventEntity getEventById(@PathVariable("id") Long id) {
-        return this.eventService.getEventById(id);
-    }
-
     @PostMapping
-    public EventEntity createEvent(@RequestBody EventDto eventDto) {
-        return this.eventService.createEvent(eventDto);
+    public EventRo createEvent(@RequestBody @Valid EventDto eventDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return this.eventService.createEvent(authentication.getName(), eventDto);
     }
 
-    @PutMapping("{id}")
-    public EventEntity updateEvent(@PathVariable("id") Long id,@RequestBody EventDto eventDto) {
-        return this.eventService.updateEvent(id,eventDto);
+    @GetMapping("{id}")
+    public EventRo getEventDetailsById(@PathVariable("id") UUID eventId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return this.eventService.getEventDetails(authentication.getName(), eventId);
     }
 
-    @DeleteMapping("{id}")
-    public void deleteEvent(@PathVariable("id") Long id){
-        this.eventService.deleteEvent(id);
+    @GetMapping("/all")
+    public List<EventRo> getAllUserEvents() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return this.eventService.getAllUserEvents(authentication.getName());
     }
+
+    @GetMapping("/created")
+    public List<EventRo> getCreatedUserEvents() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return this.eventService.getCreatedUserEvents(authentication.getName());
+    }
+
+    @PostMapping("/participate/{id}")
+    public EventRo participateInEvent(@PathVariable("id") UUID eventId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return this.eventService.participateInEvent(authentication.getName(), eventId);
+    }
+
+    @PutMapping("/{id}")
+    public EventRo updateEvent(@PathVariable("id") UUID eventId, @Valid @RequestBody EventDto eventDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return this.eventService.updateEvent(authentication.getName(), eventId, eventDto);
+    }
+
 
 }

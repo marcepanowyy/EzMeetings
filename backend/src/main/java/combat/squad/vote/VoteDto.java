@@ -1,17 +1,19 @@
 package combat.squad.vote;
 
-public record VoteDto(Long voterId, Long proposalId, String state) {
-    @Override
-    public Long voterId() {
-        return voterId;
-    }
+import combat.squad.shared.state.State;
+import combat.squad.shared.state.StateEnumValidation;
 
-    @Override
-    public Long proposalId() {
-        return proposalId;
-    }
-    @Override
-    public String state() {
-        return state;
-    }
+import javax.validation.constraints.NotNull;
+import java.util.UUID;
+
+public record VoteDto(
+
+        @NotNull(message = "Proposal id cannot be null")
+        UUID proposalId,
+
+        @StateEnumValidation(message = "State must be one of the following: YES, IF_NEED_BE, NO")
+        State state
+
+) {
+
 }

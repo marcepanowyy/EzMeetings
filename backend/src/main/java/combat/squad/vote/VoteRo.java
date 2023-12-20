@@ -1,30 +1,25 @@
 package combat.squad.vote;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import combat.squad.shared.state.State;
+
 import java.util.Date;
+import java.util.Optional;
+import java.util.UUID;
 
-public record VoteRo(Long voteId, String voterNickname, Date startDate, Date endDate, String state) {
-    @Override
-    public Long voteId() {
-        return voteId;
-    }
+public record VoteRo(
 
-    @Override
-    public String voterNickname() {
-        return voterNickname;
-    }
+        UUID voteId,
 
-    @Override
-    public Date startDate() {
-        return startDate;
-    }
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        Optional<UUID> voterId,
 
-    @Override
-    public Date endDate() {
-        return endDate;
-    }
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        Optional<String> voterEmail,
 
-    @Override
-    public String state() {
-        return state;
-    }
+        State state,
+        Date created
+
+) {
+
 }

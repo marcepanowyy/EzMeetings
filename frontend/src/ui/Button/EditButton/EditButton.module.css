@@ -1,0 +1,11 @@
+
+.edit{
+    border: none;
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-weight:bold;
+    cursor: pointer;
+    
+}

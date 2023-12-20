@@ -7,22 +7,27 @@ Główną funkcjonalnością będzie umożliwienie użytkownikom tworzenia wydar
 Zaproszeni uczestnicy będą mieli możliwość głosowania na preferowane terminy, co pozwoli ustalić ostateczną i 
 odpowiednią dla wszystkich datę wydarzenia.
 
+Najważeniejsze feature'y:
+* tworzenie wydarzeń 
+* rejestracja i logowanie użytkowników
+* zapisywanie użytkowników na wydarzenia
+* głosowanie na preferowane terminy
+* wybór ostatecznego terminu wydarzenia
+* zarządzanie wydarzeniami - edycja i usuwanie (tylko dla twórcy wydarzenia)
+
 ### Plan działań:
-* Zaimplementowanie gui umozliwiajacego wyswietlanie wydarzeń stworzonych przez konkretnego użytkownika
-* Zaimplementowanie gui pozwalającego na przeglądanie dostępnych opcji terminowych dla danego wydarzenia 
-* Stworzenie w gui możliwości dodawania nowych wydarzeń przez użytkownika (początkowo niezalogowanego)
-* Zapewnienie prostego formularza umożliwiajacego okreslenie nazwy wydarzenia, jego opisu oraz opcji terminowych
-* Zapewnienie gui do zaznaczania preferowanych opcji terminowych przez użytkownika na konkretne wydarzenie
-* możliwość oddania głosu (vote) na konkretne wydarzenie przez użytkownika (początkowo niezalogowanego) w gui
-* Autoryzacja i atuentykacja na backendzie - jesli bedzie czas
-* Dodanie testów dla frontendu
+* dodanie brakujących testów na backendzie i frontendzie
+* zaimplementowanie usuwania eventu
+* wybór preferowanego terminu przez twórcę wydarzenia
+* dodanie dokumentacji API (Swagger)
 
 ### Technologie
 
-Spring Boot, JPA (Hibernate), PostreSQL - backend
-JavaFX - frontend
+* PostgreSQL - baza danych
+* Spring Boot, JPA (Hibernate) - backend
+* React - frontend
 
-### Schemat bazy danych
+### Schemat bazy danych 
 
 ![db_diagram.jpg](assets/db_diagram.png)
 
@@ -55,13 +60,12 @@ Aby uruchomic aplikację należy najpierw postawić bazę danych. Proponujemy je
     Należy pamiętać, aby w pliku application.properties zmienić dane logowania do bazy danych na te, które podaliśmy przy uruchamianiu kontenera.
     
     ```properties
-    spring.datasource.username=postgres
-    spring.datasource.password="twoje hasło"
+    spring.datasource.username=username
+    spring.datasource.password="password"
     ```
     
     Jeśli występują problemy, kierujemy do [oficjalnej dokumentacji](https://www.docker.com/blog/how-to-use-the-postgres-docker-official-image/) lub skorzystanie z drugiego sposobu
 
-<br>
 
 2) Pobranie PostgreSQL i użycie PgAdmina
 
@@ -73,12 +77,27 @@ Aby uruchomic aplikację należy najpierw postawić bazę danych. Proponujemy je
 
 #### Backend
 
-Importujemy folder backend do Intellij: File -> Open.. Czekamy, aż Gradle pobierze wszystkie zależności i 
+Importujemy folder *backend* do Intellij: File -> Open.. Czekamy, aż Gradle pobierze wszystkie zależności i 
 zbuduje projekt. Aby uruchomić aplikację korzystamy z polecenia "Run" na klasie CombatSquadApplication (zielona strzałka)
+
+Aplikacja powinna się uruchomić na porcie 8080
 
 Aby przetestować działanie aplikacji korzystamy z test runnera (zielona strzałka obok nazwy klasy testowej)
 
 #### Frontend
 
-Analogicznie tak jak wyżej, tylko importujemy folder frontend. 
-Aby uruchomić aplikację korzystamy z polecenia "Run" na klasie Main (zielona strzałka).
+Aby uruchomić aplikację frontendową należy najpierw zainstalować node.js (https://nodejs.org/en/)
+Projekt został stworzony przy użyciu wersji 16.17.0 jednak będzie działać również na wyższych wersjach.
+
+Importujemy folder *frontend* do Webstorm lub VS Code: File -> Open.. 
+
+Aby pobrać moduły node.js należy wpisać w terminalu:
+```
+npm install
+```
+Pozwoli nam to załadować wszystkie potrzebne biblioteki. Następnie wpisujemy:
+```
+npm start
+```
+
+Aplikacja powinna się uruchomić na porcie 3000.

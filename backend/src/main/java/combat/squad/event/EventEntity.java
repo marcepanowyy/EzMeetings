@@ -3,39 +3,37 @@ package combat.squad.event;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import combat.squad.proposal.ProposalEntity;
-import combat.squad.user.UserEntity;
+import combat.squad.auth.UserEntity;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
+@Data
+@NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "events")
 public class EventEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    private UUID id;
 
     private String name;
 
     private String description;
-
-    public List<ProposalEntity> getEventProposals() {
-        return eventProposals;
-    }
-
-    public UserEntity getCreator() {
-        return creator;
-    }
-
-    public Date getCreated() {
-        return created;
-    }
-
-    @OneToOne
-    private ProposalEntity finalProposal;
 
     private String location;
 
@@ -47,73 +45,28 @@ public class EventEntity {
     @JsonBackReference
     private UserEntity creator;
 
+    @ManyToMany
+    @JoinTable(
+            name = "user_events",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<UserEntity> participants;
+
     @CreatedDate
     private Date created;
 
-    public EventEntity(String name, String description, ProposalEntity finalProposal,String location, UserEntity creator, List<ProposalEntity> eventProposals) {
+    private UUID finalProposalId;
+
+    public EventEntity(String name, String description,String location, UserEntity creator, List<ProposalEntity> eventProposals) {
         this.name = name;
         this.description = description;
-        this.finalProposal = finalProposal;
         this.location = location;
         this.creator = creator;
         this.eventProposals = eventProposals;
+        this.participants = List.of(creator);
+        this.finalProposalId = null;
+
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public ProposalEntity getFinalDate() {
-        return finalProposal;
-    }
-
-    public void setFinalProposal(ProposalEntity finalProposal) {
-        this.finalProposal = finalProposal;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public void setEventProposals(List<ProposalEntity> eventProposals) {
-        this.eventProposals = eventProposals;
-    }
-
-    public EventEntity() {
-    }
-
-    public List<ProposalEntity> getProposals() {
-        return eventProposals;
-    }
-
-    public void setProposals(List<ProposalEntity> proposals) {
-        this.eventProposals = proposals;
-    }
-    public void addProposal(ProposalEntity proposal) {
-        this.eventProposals.add(proposal);
-    }
 }
