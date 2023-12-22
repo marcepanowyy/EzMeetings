@@ -39,17 +39,33 @@ public class EventService {
     }
 
     @Transactional
+    public void deleteEvent(String username, UUID eventId) {
+
+        UserEntity user = getUserByEmail(username);
+        EventEntity event = getEventById(eventId);
+
+        if (!event.getCreator().getId().equals(user.getId())) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "User is not the creator of this event");
+        }
+
+        user.getCreatedEvents().remove(event);
+        this.userRepository.save(user);
+        this.eventRepository.delete(event);
+
+    }
+
+    @Transactional
     public EventRo getEventDetails(String userEmail, UUID eventId) {
 
         UserEntity user = getUserByEmail(userEmail);
         EventEntity event = getEventById(eventId);
 
-        if (!event.getParticipants().contains(user)) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "User is not participating in this event");
-        }
+        checkUserParticipation(user, event);
+
         return toEventRo(event, true, true, true, true);
+
     }
 
     @Transactional
@@ -60,6 +76,7 @@ public class EventService {
         return user.getEvents().stream()
                 .map(event -> toEventRo(event, false, true, false, false))
                 .collect(Collectors.toList());
+
     }
 
     public List<EventRo> getCreatedUserEvents(String userEmail) {
@@ -69,42 +86,26 @@ public class EventService {
         return user.getCreatedEvents().stream()
                 .map(event -> toEventRo(event, false, false, false, false))
                 .collect(Collectors.toList());
+
     }
 
     public EventRo createEvent(String userEmail, EventDto eventDto) {
 
         UserEntity user = getUserByEmail(userEmail);
 
-        EventEntity event = new EventEntity(
-                eventDto.name(),
-                eventDto.description(),
-                eventDto.location(),
-                user,
-                new ArrayList<>()
-        );
-
         List<ProposalDto> proposalDtos = eventDto.eventProposals();
+        hasAtLeastOneProposal(proposalDtos);
 
-        if (proposalDtos.isEmpty()) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Event must have at least one proposal"
-            );
-        }
-
+        EventEntity event = createEventEntity(user, eventDto);
         event = this.eventRepository.save(event);
 
-        List<ProposalEntity> proposalEntities = new ArrayList<>();
-
-        for (ProposalDto proposalDTO : proposalDtos) {
-            ProposalEntity proposalEntity = this.proposalService.createProposal(proposalDTO, event.getId());
-            proposalEntities.add(proposalEntity);
-        }
+        List<ProposalEntity> proposalEntities = createAndSaveProposals(proposalDtos, event.getId());
 
         event.setEventProposals(proposalEntities);
         this.eventRepository.save(event);
 
         return this.toEventRo(event, true, false, false, false);
+
     }
 
     @Transactional
@@ -126,9 +127,10 @@ public class EventService {
         this.userRepository.save(user);
 
         return this.toEventRo(event, true, true, false, false);
+
     }
 
-    // for now only the creator can update the event
+    // only the creator can update the event
 
     @Transactional
     public EventRo updateEvent(String userEmail, UUID eventId, EventDto eventDto) {
@@ -136,20 +138,11 @@ public class EventService {
         UserEntity user = getUserByEmail(userEmail);
         EventEntity event = getEventById(eventId);
 
-        if (!event.getCreator().getId().equals(user.getId())) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "User is not the creator of this event");
-        }
+        checkUserIsEventCreator(user, event);
 
         List<ProposalDto> proposalDtos = eventDto.eventProposals();
 
-        if (proposalDtos.isEmpty()) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Event must have at least one proposal"
-            );
-        }
+        hasAtLeastOneProposal(proposalDtos);
 
         List<ProposalEntity> existingProposals = event.getEventProposals();
         List<ProposalEntity> proposalsToDelete = new ArrayList<>();
@@ -220,6 +213,55 @@ public class EventService {
 
         return this.toEventRo(event, true, false, false, false);
 
+    }
+
+    private EventEntity createEventEntity(UserEntity user, EventDto eventDto) {
+
+        return new EventEntity(
+                eventDto.name(),
+                eventDto.description(),
+                eventDto.location(),
+                user,
+                new ArrayList<>()
+        );
+    }
+
+    private List<ProposalEntity> createAndSaveProposals(List<ProposalDto> proposalDtos, UUID eventId) {
+
+        List<ProposalEntity> proposalEntities = new ArrayList<>();
+
+        for (ProposalDto proposalDTO : proposalDtos) {
+            ProposalEntity proposalEntity = proposalService.createProposal(proposalDTO, eventId);
+            proposalEntities.add(proposalEntity);
+        }
+
+        return proposalEntities;
+
+    }
+
+    private void checkUserParticipation(UserEntity user, EventEntity event) {
+        if (!event.getParticipants().contains(user)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "User is not participating in this event");
+        }
+    }
+
+    private void checkUserIsEventCreator(UserEntity user, EventEntity event) {
+        if (!event.getCreator().getId().equals(user.getId())) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "User is not the creator of this event");
+        }
+    }
+
+    private void hasAtLeastOneProposal(List<ProposalDto> proposalDtos) {
+        if (proposalDtos.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Event must have at least one proposal"
+            );
+        }
     }
 
     public UserEntity getUserByEmail(String userEmail) {
