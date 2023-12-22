@@ -6,13 +6,11 @@ import combat.squad.proposal.ProposalRo;
 import combat.squad.proposal.ProposalService;
 import combat.squad.auth.UserEntity;
 import combat.squad.auth.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -44,11 +42,7 @@ public class EventService {
         UserEntity user = getUserByEmail(username);
         EventEntity event = getEventById(eventId);
 
-        if (!event.getCreator().getId().equals(user.getId())) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "User is not the creator of this event");
-        }
+        checkUserIsEventCreator(user, event);
 
         user.getCreatedEvents().remove(event);
         this.userRepository.save(user);
@@ -94,7 +88,7 @@ public class EventService {
         UserEntity user = getUserByEmail(userEmail);
 
         List<ProposalDto> proposalDtos = eventDto.eventProposals();
-        hasAtLeastOneProposal(proposalDtos);
+        checkAtLeastOneProposal(proposalDtos);
 
         EventEntity event = createEventEntity(user, eventDto);
         event = this.eventRepository.save(event);
@@ -120,11 +114,7 @@ public class EventService {
                     "User is already participating in this event");
         }
 
-        event.getParticipants().add(user);
-        this.eventRepository.save(event);
-
-        user.getEvents().add(event);
-        this.userRepository.save(user);
+        addParticipantToEvent(user, event);
 
         return this.toEventRo(event, true, true, false, false);
 
@@ -141,77 +131,90 @@ public class EventService {
         checkUserIsEventCreator(user, event);
 
         List<ProposalDto> proposalDtos = eventDto.eventProposals();
+        checkAtLeastOneProposal(proposalDtos);
 
-        hasAtLeastOneProposal(proposalDtos);
+        List<ProposalEntity> oldProposals = event.getEventProposals();
+        checkEventProposalsForModifications(oldProposals, proposalDtos);
 
-        List<ProposalEntity> existingProposals = event.getEventProposals();
-        List<ProposalEntity> proposalsToDelete = new ArrayList<>();
+        List<ProposalEntity> newProposals = createNewProposals(proposalDtos, oldProposals, event.getId());
+        removeUnusedProposals(oldProposals, newProposals);
 
-        // iterate over dtos, if an event has the same startDate as in dto - keep it, otherwise create a proposal.
-        // remove the remaining (those that are not in dto and have no votes).
+        event = updateAndSaveEventEntity(event, newProposals, eventDto);
+        return this.toEventRo(event, true, false, false, false);
+
+    }
+
+    private EventEntity updateAndSaveEventEntity(EventEntity event, List<ProposalEntity> newProposals, EventDto eventDto) {
+
+        event.setEventProposals(newProposals);
+        event.setName(eventDto.name());
+        event.setDescription(eventDto.description());
+        event.setLocation(eventDto.location());
+        return this.eventRepository.save(event);
+
+    }
+
+    private List<ProposalEntity> createNewProposals(List<ProposalDto> proposalDtos, List<ProposalEntity> oldProposals, UUID eventId) {
+
+        List<ProposalEntity> newProposals = new ArrayList<>();
 
         for (ProposalDto proposalDto : proposalDtos) {
 
-            // Existing Proposal: 2023-12-18 03:30:00.0
-            // Proposal Dto: Mon Dec 18 03:30:00 CET 2023
-
-            Optional<ProposalEntity> existingProposal = existingProposals.stream()
-                    .filter(proposal -> proposal
-                            .getStartDate()
-                            .toInstant()
-                            .equals(proposalDto
-                                    .startDate()
-                                    .toInstant()))
-                    .findFirst();
+            Optional<ProposalEntity> existingProposal = findExistingProposal(proposalDto, oldProposals);
 
             if (existingProposal.isEmpty()) {
 
-                ProposalEntity proposalEntity = this.proposalService.createProposal(proposalDto, event.getId());
-                existingProposals.add(proposalEntity);
+                ProposalEntity proposalEntity = this.proposalService.createProposal(proposalDto, eventId);
+                newProposals.add(proposalEntity);
+
+            } else {
+
+                newProposals.add(existingProposal.get());
 
             }
         }
 
-        // throw error if the proposal has votes
+        return newProposals;
 
-        for (ProposalEntity proposal : existingProposals) {
+    }
 
-            if (proposalDtos.stream()
-                    .noneMatch(proposalDto -> proposalDto.startDate().equals(proposal.getStartDate()))) {
+    private Optional<ProposalEntity> findExistingProposal(ProposalDto proposalDto, List<ProposalEntity> oldProposals) {
 
-                if (!proposal.getVotes().isEmpty()) {
+        return oldProposals.stream()
+                .filter(proposal -> proposal
+                        .getStartDate()
+                        .toInstant()
+                        .equals(proposalDto
+                                .startDate()
+                                .toInstant()))
+                .findFirst();
 
-                    throw new ResponseStatusException(
-                            HttpStatus.BAD_REQUEST,
-                            "Proposal has votes"
-                    );
+    }
 
-                } else {
-                    proposalsToDelete.add(proposal);
-                }
-            }
-        }
+    private void removeUnusedProposals(List<ProposalEntity> oldProposals, List<ProposalEntity> newProposals) {
 
-        existingProposals.removeAll(proposalsToDelete);
-        proposalsToDelete.forEach(proposal -> this.proposalService.deleteProposal(proposal.getId()));
+        List<ProposalEntity> proposalsToRemove = oldProposals
+                .stream()
+                .filter(oldProposal -> newProposals
+                        .stream()
+                        .noneMatch(newProposal -> newProposal
+                                .getId()
+                                .equals(oldProposal
+                                        .getId())))
 
-        event.setEventProposals(existingProposals);
+                .toList();
 
-        if (eventDto.name() != null) {
-            event.setName(eventDto.name());
-        }
+        proposalsToRemove.forEach(proposal -> proposalService.deleteProposal(proposal.getId()));
 
-        if (eventDto.description() != null) {
-            event.setDescription(eventDto.description());
-        }
+    }
 
-        if (eventDto.location() != null) {
-            event.setLocation(eventDto.location());
-        }
+    private void addParticipantToEvent(UserEntity user, EventEntity event) {
 
+        event.getParticipants().add(user);
         this.eventRepository.save(event);
 
-        return this.toEventRo(event, true, false, false, false);
+        user.getEvents().add(event);
+        this.userRepository.save(user);
 
     }
 
@@ -255,11 +258,41 @@ public class EventService {
         }
     }
 
-    private void hasAtLeastOneProposal(List<ProposalDto> proposalDtos) {
+    private void checkAtLeastOneProposal(List<ProposalDto> proposalDtos) {
         if (proposalDtos.isEmpty()) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Event must have at least one proposal"
+            );
+        }
+    }
+
+    public void checkEventProposalsForModifications(List<ProposalEntity> oldProposals, List<ProposalDto> proposalDtos) {
+
+        for (ProposalEntity proposal : oldProposals) {
+            processProposal(proposal, proposalDtos);
+        }
+
+    }
+
+    private void processProposal(ProposalEntity proposal, List<ProposalDto> proposalDtos) {
+
+        if (proposalDtos.stream()
+                .noneMatch(
+                        proposalDto -> proposalDto
+                                .startDate()
+                                .equals(proposal.getStartDate()))) {
+
+            checkProposalHasNoVotes(proposal);
+
+        }
+    }
+
+    private void checkProposalHasNoVotes(ProposalEntity proposal) {
+        if (!proposal.getVotes().isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Proposal has votes, cannot be modified"
             );
         }
     }
