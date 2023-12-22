@@ -15,15 +15,16 @@ export const queryClient = new QueryClient();
 export const defaultUrl = "http://localhost:8080/";
 
 
-export const handleResponse = (response: Response) => {
-    if (!response.ok) {
-      
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const res = response.json();
-    console.log("response= ",res);
-    return res;
+export const handleResponse = async (response:Response) => {
+  if (!response.ok) {
+    const errorBody = await response.json();
+    throw new Error(errorBody.message || response.statusText);
   }
+  const res = await response.json();
+  console.log("response= ", res);
+  return res;
+}
+
   
 
   export  const login = async (loginDetails: LoginRequest):Promise<string> => {

@@ -35,14 +35,18 @@
 .proposalsGrid {
     display: flex;
     min-width: 100%;
-    overflow-x: scroll;
+    overflow-x: auto;
+    max-height:35em;
+    overflow-y:auto;
 }
 
 .proposalColumn {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-right: 20px; /* adds space between columns */
+    margin:10px auto;
+    min-width:12em;
+    max-width:12em;
 }
 
 
@@ -54,7 +58,9 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     text-align: center;
     cursor:pointer;
-    height: 12em;
+    min-height:10em;
+    max-height:10em;
+    margin:5px;
 }
 
 .votesContainer {
@@ -67,6 +73,7 @@
     margin-top: 5px;
     border-radius: var(--input-border-radius);
     text-align: center;
+    margin:5px;
 }
 
 .count{

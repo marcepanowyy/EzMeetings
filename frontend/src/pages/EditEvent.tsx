@@ -1,6 +1,6 @@
 import {useParams,useNavigate} from 'react-router-dom'
 import React,{useEffect,useState} from 'react';
-import EventForm from '../components/event/EventForm';
+import EventForm from '../components/event/EventForm/EventForm';
 import { EventResponse } from '../models/api.models';
 
 import {getEventDetails, putEvent} from '../utils/http'
@@ -26,9 +26,15 @@ const EditEvent: React.FC = () =>{
 
     const handleEditEvent = async (eventData: EventResponse) => {
       mutate(eventData,{
-        onSuccess: (response) => {
-            showFeedback('success', 'Wydarzenie zostało pomyślnie zaktualizowane!');
-        },
+              onSuccess: (response) => {
+                  console.log(response);
+                  navigate(`/events/${response.id}`, {
+                      state: {
+                          feedbackType: 'success',
+                          feedbackMessage: 'Event updated successfully!'
+                      }
+                  });
+              },
         onError: (error) => {
             console.log(error);
             showFeedback('error', error.message);

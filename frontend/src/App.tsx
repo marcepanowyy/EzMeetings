@@ -1,4 +1,8 @@
-import { RouterProvider, createBrowserRouter, redirect } from "react-router-dom";
+import {
+  RouterProvider,
+  createBrowserRouter,
+  redirect,
+} from "react-router-dom";
 import { tokenLoader, checkAuthLoader } from "./utils/auth.js";
 import { action as logoutAction } from "./pages/Logout";
 
@@ -21,19 +25,28 @@ function App() {
       loader: tokenLoader,
       id: "root",
       children: [
-        { index: true, element: <Home /> },
+        {
+          index: true,
+          element: <Home />,
+          loader: () => {
+            if (checkAuthLoader() === null) {
+              return redirect("/events");
+            }
+            return null;
+          },
+        },
         {
           path: "events",
           children: [
             {
               index: true,
               element: <EventList />,
-              loader: checkAuthLoader
-            }, 
+              loader: checkAuthLoader,
+            },
             {
               path: "new",
               element: <CreateEvent />,
-              loader: checkAuthLoader
+              loader: checkAuthLoader,
             },
             {
               path: ":id",
@@ -79,11 +92,11 @@ function App() {
     },
   ]);
 
-  return(
+  return (
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />;
     </QueryClientProvider>
-    )
+  );
 }
 
 export default App;

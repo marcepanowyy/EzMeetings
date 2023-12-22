@@ -56,9 +56,6 @@ const EventDetails: React.FC = () => {
     </div>
   );
 
-    
-  
-
   const CopyBtn = (
     <div className={styles.copyButton}>
       <CopyButton copyText={id as string} />
@@ -66,23 +63,30 @@ const EventDetails: React.FC = () => {
   );
 
   const [proposals, setProposals] = useState<Vote[]>([]);
+  const [originalProposals, setOriginalProposals] = useState<Vote[]>([]);
 
   useEffect(() => {
     if (data && data.eventProposals) {
       const userProposals = data.eventProposals
-        .map((proposal) => {
-          const userVote = proposal.votes?.find(
-            (vote) => vote.voterEmail === email
-          );
-          return {
-            proposalId: proposal.id ?? "",
-            state: userVote ? userVote.state : "PENDING",
-          };
-        })
-        .filter((proposal) => proposal.proposalId);
+          .map((proposal) => {
+            const userVote = proposal.votes?.find(
+                (vote) => vote.voterEmail === email
+            );
+            return {
+              proposalId: proposal.id ?? "",
+              state: userVote ? userVote.state : "PENDING",
+            };
+          })
+          .filter((proposal) => proposal.proposalId);
       setProposals(userProposals as Vote[]);
+      setOriginalProposals(userProposals as Vote[]);
     }
   }, [data, email]);
+
+
+  const haveVotesChanged = () => {
+    return JSON.stringify(proposals) !== JSON.stringify(originalProposals);
+  };
 
   const formatDateAndTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -117,10 +121,12 @@ const EventDetails: React.FC = () => {
 
   const submitVotes = async () => {
     if (!data || !data.eventProposals) return;
+    if (!haveVotesChanged()) {
+      showFeedback("error", "No changes to the votes were made");
+      return;
+    }
     const votesToSubmit = prepareVotesForSubmission(data.eventProposals);
-    //console.log("submitVotes", votesToSubmit);
     await mutate(votesToSubmit);
-    // window.location.reload();
   };
 
 
