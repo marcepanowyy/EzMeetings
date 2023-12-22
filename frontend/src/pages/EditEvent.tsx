@@ -1,6 +1,6 @@
 import {useParams,useNavigate} from 'react-router-dom'
 import React,{useEffect,useState} from 'react';
-import EventForm from '../components/event/EventForm';
+import EventForm from '../components/event/EventForm/EventForm';
 import { EventResponse } from '../models/api.models';
 
 import {getEventDetails, putEvent} from '../utils/http'

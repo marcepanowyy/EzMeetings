@@ -1,5 +1,5 @@
 import React from 'react';
-import EventForm from '../components/event/EventForm';
+import EventForm from '../components/event/EventForm/EventForm';
 import { EventResponse } from '../models/api.models';
 import {
     postNewEvent
