@@ -5,7 +5,7 @@ import { getTokenDuration } from "../utils/auth";
 import { decodeToken } from "react-jwt";
 import "./RootLayout.css";
 import { MyDecodedToken } from "../models/MyDecodedToken.model";
-import  useFeedbackReceive  from "../utils/useFeedbackReceive";
+import  useFeedbackReceive  from "../hooks/useFeedbackReceive";
 import Feedback from "../ui/Feedback/Feedback";
 import { getSimpleToken } from "../utils/auth";
 const RootLayout: React.FC = () => {

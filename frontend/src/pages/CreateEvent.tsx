@@ -7,7 +7,7 @@ import {
 import { getSimpleToken } from '../utils/auth';
 import { useNavigate } from 'react-router-dom';
 import {useMutation} from '@tanstack/react-query';
-import { useFeedback } from '../utils/useFeedback';
+import { useFeedback } from '../hooks/useFeedback';
 
 const CreateEvent: React.FC = () => {
     const token = getSimpleToken();

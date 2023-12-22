@@ -17,7 +17,7 @@ import { EventProposal } from "../../models/api.models";
 import { MyDecodedToken } from "../../models/MyDecodedToken.model";
 import { decodeToken } from "react-jwt";
 import Feedback from "../../ui/Feedback/Feedback";
-import useFeedbackReceive from "../../utils/useFeedbackReceive";
+import useFeedbackReceive from "../../hooks/useFeedbackReceive";
 import { queryClient } from "../../utils/http";
 import LoadingOverlay from "../../ui/LoadingOverlay/LoadingOverlay";
 import CopyButton from "../../ui/Button/CopyButton/CopyButton";

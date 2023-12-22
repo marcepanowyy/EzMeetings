@@ -14,8 +14,8 @@ import LoadingOverlay from "../../ui/LoadingOverlay/LoadingOverlay";
 import { EventResponse, Proposal } from "../../models/api.models";
 import { FeedbackMessage, FeedbackType } from "../../models/feedback.model";
 import Feedback from "../../ui/Feedback/Feedback";
-import useInput from "../../utils/use-input";
-
+import useInput from "../../hooks/use-input";
+import useEventProposals from "../../hooks/useEventProposals";
 const validateName = (name: string) =>
   name.trim().length >= 3 && name.trim().length <= 15;
 const validateDescription = (description: string) =>
@@ -32,14 +32,7 @@ const EventForm: React.FC<{
   showFeedback?: (type: FeedbackType, message: string) => void;
   editable?: boolean;
 }> = ({ event, onSubmit, isPending, feedback, showFeedback, editable }) => {
-  //console.log(JSON.stringify(event));
-
   const [proposals, setProposals] = useState<Proposal[]>([]);
-  // const [name, setName] = useState<string>(event?.name || "");
-  // const [description, setDescription] = useState<string>(
-  //   event?.description || ""
-  // );
-  // const [location, setLocation] = useState<string>(event?.location || "");
   const title = event ? "Edit Event" : "Create Event";
 
   const {
@@ -69,31 +62,19 @@ const EventForm: React.FC<{
     reset: resetLocation,
   } = useInput(validateLocation);
 
-  useEffect(() => {
-    if (event?.eventProposals) {
-      const initialProposals = event.eventProposals.map((proposal) => ({
-        id: proposal.id,
-        start: new Date(proposal.startDate),
-        end: new Date(
-          new Date(proposal.startDate).setHours(
-            new Date(proposal.startDate).getHours() + 1
-          )
-        ),
-        title: event.name,
-      }));
-      setProposals(initialProposals);
-      locationChanged(event?.location || "");
-      descriptionChanged(event?.description || "");
-      nameChanged(event?.name || "");
-    }
-  }, [event]);
-
   const isSubmitDisabled =
     proposals.length === 0 ||
     !nameIsValid ||
     !descriptionIsValid ||
     !locationIsValid;
 
+  useEventProposals(
+    event,
+    setProposals,
+    locationChanged,
+    descriptionChanged,
+    nameChanged,
+  );
   const handleSelectSlot = (slotInfo: SlotInfo) => {
     const now = new Date();
     const start = new Date(slotInfo.start);
@@ -121,7 +102,7 @@ const EventForm: React.FC<{
       const proposalWithVotes = event?.eventProposals?.find(
         (p) =>
           formatDateToISO(new Date(p.startDate)) ===
-          formatDateToISO(proposal?.start)
+          formatDateToISO(proposal?.start),
       );
       if (
         proposalWithVotes &&

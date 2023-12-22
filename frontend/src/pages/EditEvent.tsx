@@ -8,7 +8,7 @@ import { getSimpleToken } from '../utils/auth';
 import { EventResponseDetails } from '../models/eventDetails.models';
 import {useQuery,useMutation} from '@tanstack/react-query'
 import LoadingOverlay from '../ui/LoadingOverlay/LoadingOverlay'
-import { useFeedback } from '../utils/useFeedback';
+import { useFeedback } from '../hooks/useFeedback';
 const EditEvent: React.FC = () =>{
     const id = useParams<{ id: string }>().id;
     const token = getSimpleToken();

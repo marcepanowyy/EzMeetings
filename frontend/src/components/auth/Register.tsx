@@ -2,12 +2,12 @@ import React from "react";
 import styles from "./AuthForms.module.css";
 import { emailValidator, passwordValidator } from "../../utils/validators";
 
-import useInput from "../../utils/use-input"; 
+import useInput from "../../hooks/use-input";
 import {Link, useNavigate} from 'react-router-dom';
 import { RegisterRequest } from "../../models/api.models";
 import { register } from "../../utils/http";
 
-import { useFeedback } from '../../utils/useFeedback'; 
+import { useFeedback } from '../../hooks/useFeedback';
 import Feedback from "../../ui/Feedback/Feedback";
 import {useMutation} from '@tanstack/react-query';
 import LoadingOverlay from "../../ui/LoadingOverlay/LoadingOverlay";
