@@ -11,6 +11,7 @@ import { useFeedback } from '../../hooks/useFeedback';
 import Feedback from "../../ui/Feedback/Feedback";
 import {useMutation} from '@tanstack/react-query';
 import LoadingOverlay from "../../ui/LoadingOverlay/LoadingOverlay";
+import axios, {isAxiosError} from "axios";
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
@@ -66,8 +67,8 @@ const Register: React.FC = () => {
             }
           });
       },
-      onError: (error) => {
-          showFeedback('error', error.message); 
+      onError: (error:Error) => {
+          showFeedback('error', error.message  || 'An error occurred');
       }
     });
     
