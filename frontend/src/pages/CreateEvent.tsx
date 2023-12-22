@@ -24,7 +24,7 @@ const CreateEvent: React.FC = () => {
                   navigate(`/events/${response.id}`, { 
                     state: { 
                       feedbackType: 'success', 
-                      feedbackMessage: 'Wydarzenie zostało pomyślnie utworzone!' 
+                      feedbackMessage: 'Event created successfully!'
                     }
                   });
               },

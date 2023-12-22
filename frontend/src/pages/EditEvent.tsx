@@ -26,9 +26,15 @@ const EditEvent: React.FC = () =>{
 
     const handleEditEvent = async (eventData: EventResponse) => {
       mutate(eventData,{
-        onSuccess: (response) => {
-            showFeedback('success', 'Wydarzenie zostało pomyślnie zaktualizowane!');
-        },
+              onSuccess: (response) => {
+                  console.log(response);
+                  navigate(`/events/${response.id}`, {
+                      state: {
+                          feedbackType: 'success',
+                          feedbackMessage: 'Event updated successfully!'
+                      }
+                  });
+              },
         onError: (error) => {
             console.log(error);
             showFeedback('error', error.message);
