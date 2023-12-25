@@ -72,5 +72,4 @@ public class EventController {
         return this.eventService.finalizeEvent(authentication.getName(), eventId, proposalId);
     }
 
-
 }

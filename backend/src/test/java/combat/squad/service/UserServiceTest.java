@@ -71,6 +71,7 @@ public class UserServiceTest {
 
     @Test
     public void testGetUserByIdUserNotFound() {
+
         UUID userId = UUID.randomUUID();
 
         when(userRepository.findById(userId)).thenReturn(Optional.empty());

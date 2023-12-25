@@ -60,7 +60,7 @@ public class EventEntity {
     @JoinColumn(name = "final_proposal_id")
     private ProposalEntity finalProposal;
 
-    public EventEntity(String name, String description,String location, UserEntity creator, List<ProposalEntity> eventProposals) {
+    public EventEntity(String name, String description, String location, UserEntity creator, List<ProposalEntity> eventProposals) {
         this.name = name;
         this.description = description;
         this.location = location;
