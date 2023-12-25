@@ -66,5 +66,11 @@ public class EventController {
         this.eventService.deleteEvent(authentication.getName(), eventId);
     }
 
+    @PostMapping("/finalize/{eventId}/{proposalId}")
+    public EventRo finalizeEvent(@PathVariable("eventId") UUID eventId, @PathVariable("proposalId") UUID proposalId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return this.eventService.finalizeEvent(authentication.getName(), eventId, proposalId);
+    }
+
 
 }

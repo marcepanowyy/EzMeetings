@@ -144,6 +144,23 @@ public class EventService {
 
     }
 
+    @Transactional
+    public EventRo finalizeEvent(String userEmail, UUID eventId, UUID proposalId) {
+
+        UserEntity user = getUserByEmail(userEmail);
+        EventEntity event = getEventById(eventId);
+        ProposalEntity proposal = this.proposalService.getProposalById(proposalId);
+
+        checkUserIsEventCreator(user, event);
+        checkProposalBelongsToEvent(proposal, event);
+
+        event.setFinalProposal(proposal);
+        this.eventRepository.save(event);
+
+        return this.toEventRo(event, true, true, true, true);
+
+    }
+
     private EventEntity updateAndSaveEventEntity(EventEntity event, List<ProposalEntity> newProposals, EventDto eventDto) {
 
         event.setEventProposals(newProposals);
@@ -297,18 +314,33 @@ public class EventService {
         }
     }
 
+    private void checkProposalBelongsToEvent(ProposalEntity proposal, EventEntity event) {
+
+        if (!proposal.getEvent().getId().equals(event.getId())) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Proposal does not belong to this event"
+            );
+        }
+
+    }
+
     public UserEntity getUserByEmail(String userEmail) {
+
         return this.userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "User not found"));
+
     }
 
     private EventEntity getEventById(UUID eventId) {
+
         return this.eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Event not found"));
+
     }
 
     public EventRo toEventRo(
@@ -336,7 +368,7 @@ public class EventService {
                 : Optional.empty();
 
         Optional<UUID> finalProposalId = showFinalProposalId
-                ? Optional.ofNullable(event.getFinalProposalId())
+                ? Optional.ofNullable(event.getFinalProposal().getId())
                 : Optional.empty();
 
         return new EventRo(
