@@ -160,7 +160,6 @@ public class ProposalServiceTest {
         );
 
         when(proposalRepository.findById(proposalId)).thenReturn(Optional.of(proposal));
-
         doNothing().when(proposalRepository).delete(proposal);
 
         proposalService.deleteProposal(proposalId);
