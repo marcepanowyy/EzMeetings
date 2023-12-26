@@ -368,7 +368,8 @@ public class EventService {
                 : Optional.empty();
 
         Optional<UUID> finalProposalId = showFinalProposalId
-                ? Optional.ofNullable(event.getFinalProposal().getId())
+                ? Optional.ofNullable(event.getFinalProposal())
+                .map(ProposalEntity::getId)
                 : Optional.empty();
 
         return new EventRo(

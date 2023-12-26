@@ -82,11 +82,13 @@ public class VoteServiceTest {
         user.setId(UUID.randomUUID());
 
         event.setId(UUID.randomUUID());
-        event.getEventProposals().addAll(List.of(proposal1, proposal2, proposal3));
 
         proposal1.setId(UUID.randomUUID());
         proposal2.setId(UUID.randomUUID());
         proposal3.setId(UUID.randomUUID());
+
+        event.setEventProposals(List.of(proposal1, proposal2, proposal3));
+//        event.getEventProposals().addAll(List.of(proposal1, proposal2, proposal3));
 
     }
 
