@@ -305,7 +305,7 @@ public class EventService {
         }
     }
 
-    private void checkProposalHasNoVotes(ProposalEntity proposal) {
+    public void checkProposalHasNoVotes(ProposalEntity proposal) {
         if (!proposal.getVotes().isEmpty()) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -314,7 +314,7 @@ public class EventService {
         }
     }
 
-    private void checkProposalBelongsToEvent(ProposalEntity proposal, EventEntity event) {
+    public void checkProposalBelongsToEvent(ProposalEntity proposal, EventEntity event) {
 
         if (!proposal.getEvent().getId().equals(event.getId())) {
             throw new ResponseStatusException(
@@ -334,7 +334,7 @@ public class EventService {
 
     }
 
-    private EventEntity getEventById(UUID eventId) {
+    public EventEntity getEventById(UUID eventId) {
 
         return this.eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResponseStatusException(
