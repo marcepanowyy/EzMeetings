@@ -6,6 +6,7 @@ import combat.squad.proposal.ProposalRo;
 import combat.squad.proposal.ProposalService;
 import combat.squad.auth.UserEntity;
 import combat.squad.auth.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,10 +19,13 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class EventService {
 
     private final EventRepository eventRepository;
+
     private final UserRepository userRepository;
+
     private final ProposalService proposalService;
 
     public EventService(EventRepository eventRepository, UserRepository userRepository, ProposalService proposalService) {
@@ -36,7 +40,6 @@ public class EventService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
     public void deleteEvent(String username, UUID eventId) {
 
         UserEntity user = getUserByEmail(username);
@@ -50,7 +53,6 @@ public class EventService {
 
     }
 
-    @Transactional
     public EventRo getEventDetails(String userEmail, UUID eventId) {
 
         UserEntity user = getUserByEmail(userEmail);
@@ -62,7 +64,6 @@ public class EventService {
 
     }
 
-    @Transactional
     public List<EventRo> getAllUserEvents(String userEmail) {
 
         UserEntity user = getUserByEmail(userEmail);
@@ -102,7 +103,6 @@ public class EventService {
 
     }
 
-    @Transactional
     public EventRo participateInEvent(String userEmail, UUID eventId) {
 
         UserEntity user = getUserByEmail(userEmail);
@@ -122,7 +122,6 @@ public class EventService {
 
     // only the creator can update the event
 
-    @Transactional
     public EventRo updateEvent(String userEmail, UUID eventId, EventDto eventDto) {
 
         UserEntity user = getUserByEmail(userEmail);
@@ -144,7 +143,6 @@ public class EventService {
 
     }
 
-    @Transactional
     public EventRo finalizeEvent(String userEmail, UUID eventId, UUID proposalId) {
 
         UserEntity user = getUserByEmail(userEmail);

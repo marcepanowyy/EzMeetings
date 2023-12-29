@@ -16,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
@@ -24,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@Transactional
 public class EventServiceTest {
 
     @Mock
@@ -327,4 +329,61 @@ public class EventServiceTest {
         verify(eventRepository, times(1)).findById(nonExistentId);
 
     }
+
+    @Test
+    public void testParticipateInEventNonExistingUserEmail(){
+
+        String nonExistingEmail = "email";
+
+        when(userRepository.findByEmail(nonExistingEmail)).thenReturn(Optional.empty());
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            eventService.participateInEvent(nonExistingEmail, event1.getId());
+        });
+
+        verify(userRepository, times(1)).findByEmail(nonExistingEmail);
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("User not found", exception.getReason());
+
+    }
+
+    @Test
+    public void testParticipateInEventNonExistingEventId(){
+
+        UUID nonExistingEventId = UUID.randomUUID();
+
+        when(userRepository.findByEmail(user3.getEmail())).thenReturn(Optional.of(user3));
+        when(eventRepository.findById(nonExistingEventId)).thenReturn(Optional.empty());
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            eventService.participateInEvent(user3.getEmail(), nonExistingEventId);
+        });
+
+        verify(userRepository, times(1)).findByEmail(user3.getEmail());
+        verify(eventRepository, times(1)).findById(nonExistingEventId);
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("Event not found", exception.getReason());
+
+    }
+
+    @Test
+    public void testParticipateInEventUserAlreadyParticipates(){
+
+        when(userRepository.findByEmail(user1.getEmail())).thenReturn(Optional.of(user1));
+        when(eventRepository.findById(event1.getId())).thenReturn(Optional.of(event1));
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            eventService.participateInEvent(user1.getEmail(), event1.getId());
+        });
+
+        verify(userRepository, times(1)).findByEmail(user1.getEmail());
+        verify(eventRepository, times(1)).findById(event1.getId());
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+        assertEquals("User is already participating in this event", exception.getReason());
+
+    }
+
 }

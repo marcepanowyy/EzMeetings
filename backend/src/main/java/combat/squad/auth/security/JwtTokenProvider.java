@@ -23,12 +23,12 @@ import java.util.function.Function;
 @Component
 public class JwtTokenProvider {
 
-    @PostConstruct
-    public void printValues() {
-
-        System.out.println("jwtSecret: " + jwtSecret);
-        System.out.println("jwtExpiration: " + jwtExpiration);
-    }
+//    @PostConstruct
+//    public void printValues() {
+//
+//        System.out.println("jwtSecret: " + jwtSecret);
+//        System.out.println("jwtExpiration: " + jwtExpiration);
+//    }
 
 //    @Value("${jwt.secret}")
 //    private String jwtSecret;
@@ -69,9 +69,6 @@ public class JwtTokenProvider {
 
     public String generateToken(Map<String, Object> claims, UserDetails userDetails) {
 
-        System.out.println("jwtSecret: " + jwtSecret);
-        System.out.println("jwtExpiration: " + jwtExpiration);
-
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userDetails.getUsername())
@@ -87,9 +84,6 @@ public class JwtTokenProvider {
     }
 
     private Key getSignInKey(){
-
-        System.out.println("jwtSecret: " + jwtSecret);
-        System.out.println("jwtExpiration: " + jwtExpiration);
 
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
         return Keys.hmacShaKeyFor(keyBytes);
