@@ -30,13 +30,11 @@ public class JwtTokenProvider {
 //        System.out.println("jwtExpiration: " + jwtExpiration);
 //    }
 
-//    @Value("${jwt.secret}")
-//    private String jwtSecret;
-    private String jwtSecret = "On1KRqsfehx80aLAHgshz5vcAknMdGWcOn1KRqsfehx80aLAHgshz5vcAknMdGWc";
+    @Value("${jwt.secret}")
+    private String jwtSecret;
 
-//    @Value("${jwt.expiration}")
-//    private int jwtExpiration;
-    private int jwtExpiration = 604800000;
+    @Value("${jwt.expiration}")
+    private int jwtExpiration;
 
     public String extractUsername(String token){
         return extractClaim(token, Claims::getSubject);
@@ -84,7 +82,6 @@ public class JwtTokenProvider {
     }
 
     private Key getSignInKey(){
-
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
         return Keys.hmacShaKeyFor(keyBytes);
     }

@@ -28,7 +28,7 @@ import java.util.*;
 public class UserEntity implements UserDetails {
 
     private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    private static JwtTokenProvider jwtTokenProvider = new JwtTokenProvider();
+    private static JwtTokenProvider jwtTokenProvider;
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -112,6 +112,11 @@ public class UserEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Autowired
+    public UserEntity(JwtTokenProvider jwtTokenProvider) {
+        UserEntity.jwtTokenProvider = jwtTokenProvider;
     }
 
 }
