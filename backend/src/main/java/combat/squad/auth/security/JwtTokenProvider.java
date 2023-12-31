@@ -23,13 +23,6 @@ import java.util.function.Function;
 @Component
 public class JwtTokenProvider {
 
-//    @PostConstruct
-//    public void printValues() {
-//
-//        System.out.println("jwtSecret: " + jwtSecret);
-//        System.out.println("jwtExpiration: " + jwtExpiration);
-//    }
-
     @Value("${jwt.secret}")
     private String jwtSecret;
 

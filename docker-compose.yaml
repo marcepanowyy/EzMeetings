@@ -4,7 +4,7 @@ services:
 
   db:
 
-    container_name: postgres-container
+    container_name: db_postgres_container
 
     image: postgres:latest
 
@@ -23,19 +23,33 @@ services:
 
   backend:
 
-    container_name: backend_container
+    container_name: backend_spring_boot_container
 
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
 
     ports:
       - "8080:8080"
+
     depends_on:
       - db
 
     networks:
       - my_network
+  
+
+  frontend:
+
+    container_name: frontend_react_container
+  
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+
+    ports:
+      - "3000:3000"
+
 
 networks:
   my_network:
