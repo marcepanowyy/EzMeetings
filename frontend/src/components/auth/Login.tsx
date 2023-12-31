@@ -2,24 +2,22 @@ import React from "react";
 import styles from "./AuthForms.module.css";
 import { emailValidator, passwordValidator } from "../../utils/validators";
 import useInput from "../../hooks/use-input";
-import {Link, redirect,useNavigate} from 'react-router-dom';
+import { Link, redirect, useNavigate } from "react-router-dom";
 
-import { login } from '../../utils/http';
-import { LoginRequest } from '../../models/api.models'; 
+import { login } from "../../utils/http";
+import { LoginRequest } from "../../models/api.models";
 
-
-import { useFeedback } from '../../hooks/useFeedback';
+import { useFeedback } from "../../hooks/useFeedback";
 import Feedback from "../../ui/Feedback/Feedback";
-import {useMutation} from '@tanstack/react-query';
+import { useMutation } from "@tanstack/react-query";
 import LoadingOverlay from "../../ui/LoadingOverlay/LoadingOverlay";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const { feedback, showFeedback } = useFeedback();
-  const {mutate,isPending} = useMutation({
-    mutationFn:(loginDetails: LoginRequest)=> login(loginDetails)
-  })
-
+  const { mutate, isPending } = useMutation({
+    mutationFn: (loginDetails: LoginRequest) => login(loginDetails),
+  });
 
   const {
     value: emailValue,
@@ -47,27 +45,23 @@ const Login: React.FC = () => {
     const loginDetails: LoginRequest = {
       email: emailValue,
       password: passwordValue,
-    }; 
-    
-      mutate(loginDetails,{
-        onSuccess: (response) => {
-            console.log(response);
-            navigate('/', { 
-              state: { 
-                feedbackType: 'success', 
-                feedbackMessage: 'Logged in successfully!',
-              }
-            });
-        },
-        onError: (error) => {
-          console.log("MY ERROR!!!!!",error.stack); 
-         // showFeedback('error', error); 
-        }
-      });
+    };
+
+    mutate(loginDetails, {
+      onSuccess: (response) => {
+        console.log(response);
+        navigate("/", {
+          state: {
+            feedbackType: "success",
+            feedbackMessage: "Logged in successfully!",
+          },
+        });
+      },
+      onError: (error) => {
+        showFeedback("error", error.message || "An error occurred");
+      },
+    });
   };
-  
-
-
 
   return (
     <section className={styles.authSection}>
@@ -119,7 +113,7 @@ const Login: React.FC = () => {
           </div>
           <p className={styles.authText}>
             Don't have an account? <Link to="/register">Register</Link>
-            </p>
+          </p>
           <button
             className="button"
             disabled={!emailIsValid || !passwordIsValid}
