@@ -66,9 +66,7 @@ public class EventEntity {
         this.location = location;
         this.creator = creator;
         this.eventProposals = eventProposals;
-        this.participants = List.of(creator);
+        this.participants = new ArrayList<>(List.of(creator));
         this.finalProposal = null;
-
     }
-
 }
