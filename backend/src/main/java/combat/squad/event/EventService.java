@@ -48,6 +48,7 @@ public class EventService {
         checkUserIsEventCreator(user, event);
 
         user.getCreatedEvents().remove(event);
+        user.getEvents().remove(event);
         this.userRepository.save(user);
         this.eventRepository.delete(event);
 
@@ -147,9 +148,13 @@ public class EventService {
 
         UserEntity user = getUserByEmail(userEmail);
         EventEntity event = getEventById(eventId);
+
         ProposalEntity proposal = this.proposalService.getProposalById(proposalId);
 
         checkUserIsEventCreator(user, event);
+
+        System.out.println("rarar" + proposal.getId());
+
         checkProposalBelongsToEvent(proposal, event);
 
         event.setFinalProposal(proposal);
@@ -282,7 +287,7 @@ public class EventService {
         }
     }
 
-    public void checkEventProposalsForModifications(List<ProposalEntity> oldProposals, List<ProposalDto> proposalDtos) {
+    private void checkEventProposalsForModifications(List<ProposalEntity> oldProposals, List<ProposalDto> proposalDtos) {
 
         for (ProposalEntity proposal : oldProposals) {
             processProposal(proposal, proposalDtos);
@@ -303,7 +308,7 @@ public class EventService {
         }
     }
 
-    public void checkProposalHasNoVotes(ProposalEntity proposal) {
+    private void checkProposalHasNoVotes(ProposalEntity proposal) {
         if (!proposal.getVotes().isEmpty()) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -312,7 +317,9 @@ public class EventService {
         }
     }
 
-    public void checkProposalBelongsToEvent(ProposalEntity proposal, EventEntity event) {
+    private void checkProposalBelongsToEvent(ProposalEntity proposal, EventEntity event) {
+
+        System.out.println(proposal.getId());
 
         if (!proposal.getEvent().getId().equals(event.getId())) {
             throw new ResponseStatusException(
@@ -323,7 +330,7 @@ public class EventService {
 
     }
 
-    public UserEntity getUserByEmail(String userEmail) {
+    private UserEntity getUserByEmail(String userEmail) {
 
         return this.userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -332,7 +339,7 @@ public class EventService {
 
     }
 
-    public EventEntity getEventById(UUID eventId) {
+    private EventEntity getEventById(UUID eventId) {
 
         return this.eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResponseStatusException(
