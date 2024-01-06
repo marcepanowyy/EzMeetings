@@ -50,7 +50,7 @@ const Login: React.FC = () => {
     mutate(loginDetails, {
       onSuccess: (response) => {
         console.log(response);
-        navigate("/", {
+        navigate("/events", {
           state: {
             feedbackType: "success",
             feedbackMessage: "Logged in successfully!",
