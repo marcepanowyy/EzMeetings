@@ -1,13 +1,20 @@
-FROM gradle:jdk17-alpine AS builder
+FROM bellsoft/liberica-runtime-container:jdk-17-musl AS builder
 
 WORKDIR /app
 
 COPY build.gradle settings.gradle ./
 COPY src ./src
 
+RUN apk add --no-cache curl unzip \
+    && curl -L https://services.gradle.org/distributions/gradle-7.3-bin.zip -o gradle.zip \
+    && unzip gradle.zip \
+    && rm gradle.zip
+
+ENV PATH="/app/gradle-7.3/bin:${PATH}"
+
 RUN gradle build
 
-FROM openjdk:17-alpine
+FROM bellsoft/liberica-runtime-container:jdk-17-musl
 
 WORKDIR /app
 
