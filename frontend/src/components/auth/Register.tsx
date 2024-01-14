@@ -60,7 +60,7 @@ const Register: React.FC = () => {
     mutate(registerDetails,{
       onSuccess: (response) => {
           console.log(response);
-          navigate('/', { 
+          navigate('/events', { 
             state: { 
               feedbackType: 'success', 
               feedbackMessage: 'Registered successfully',
