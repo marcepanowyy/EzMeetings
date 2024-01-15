@@ -37,7 +37,14 @@ const EventDetails = () => {
       .filter((proposal) => proposal.state !== "PENDING")
       .map(({ proposalId, state }) => ({ proposalId, state }));
 
-    await mutate(votesToSubmit);
+    await mutate(votesToSubmit, {
+      onSuccess: () => {
+        showFeedback("success", "Votes were successfully submitted");
+      },
+      onError: (error) => {
+        showFeedback("error", error.message);
+      },
+    });
   };
 
   if (isLoading) return <div className={styles.loading}>Loading...</div>;
