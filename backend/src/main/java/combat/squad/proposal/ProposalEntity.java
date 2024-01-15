@@ -3,6 +3,7 @@ package combat.squad.proposal;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import combat.squad.event.EventEntity;
 import combat.squad.vote.VoteEntity;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;

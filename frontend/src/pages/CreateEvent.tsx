@@ -1,5 +1,5 @@
 import React from 'react';
-import EventForm from '../components/event/EventForm';
+import EventForm from '../components/event/EventForm/EventForm';
 import { EventResponse } from '../models/api.models';
 import {
     postNewEvent
@@ -7,7 +7,7 @@ import {
 import { getSimpleToken } from '../utils/auth';
 import { useNavigate } from 'react-router-dom';
 import {useMutation} from '@tanstack/react-query';
-import { useFeedback } from '../utils/useFeedback';
+import { useFeedback } from '../hooks/useFeedback';
 
 const CreateEvent: React.FC = () => {
     const token = getSimpleToken();
@@ -24,7 +24,7 @@ const CreateEvent: React.FC = () => {
                   navigate(`/events/${response.id}`, { 
                     state: { 
                       feedbackType: 'success', 
-                      feedbackMessage: 'Wydarzenie zostało pomyślnie utworzone!' 
+                      feedbackMessage: 'Event created successfully!'
                     }
                   });
               },

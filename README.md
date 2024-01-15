@@ -15,12 +15,6 @@ Najważeniejsze feature'y:
 * wybór ostatecznego terminu wydarzenia
 * zarządzanie wydarzeniami - edycja i usuwanie (tylko dla twórcy wydarzenia)
 
-### Plan działań:
-* dodanie brakujących testów na backendzie i frontendzie
-* zaimplementowanie usuwania eventu
-* wybór preferowanego terminu przez twórcę wydarzenia
-* dodanie dokumentacji API (Swagger)
-
 ### Technologie
 
 * PostgreSQL - baza danych
@@ -29,75 +23,42 @@ Najważeniejsze feature'y:
 
 ### Schemat bazy danych 
 
-![db_diagram.jpg](assets/db_diagram.png)
+<img src="assets/db_diagram.png" alt="db_diagram.jpg" height="450px">
 
 ### Uruchomienie aplikacji
 
-#### Baza danych
+Mając Dockera, aplikację można uruchomić jedną komendą. Wystarczy wejść do folderu projektowego 
+(w miejscu, gdzie znajduje się plik **docker-compose.yaml**) i uruchomić komendę:
 
-Aby uruchomic aplikację należy najpierw postawić bazę danych. Proponujemy jeden z dwóch możliwych sposobów:
+```
+docker-compose up -d 
+```
 
-1) Użycie dokeryzowanej bazy danych:
+Domyślnie aplikacja będzie dostępna na następujących portach:
 
-    Pobieramy obraz postgresa na lokalną maszynę:
-    
-    ```
-    docker pull postgres
-    ```
-    
-    Następnie uruchamiamy kontener wpisując odpowiednią nazwę użytkownika i hasło (może być ta co w przykładzie):
-    
-    ```
-    docker run -d --name postgres-1 -e POSTGRES_PASSWORD=password -e POSTGRES_USER=username -p 5432:5432 postgres
-    ```
-    
-    Możemy sprawdzić czy kontener działa poprawnie
-    
-    ```
-    docker ps
-    ```
-    
-    Należy pamiętać, aby w pliku application.properties zmienić dane logowania do bazy danych na te, które podaliśmy przy uruchamianiu kontenera.
-    
-    ```properties
-    spring.datasource.username=username
-    spring.datasource.password="password"
-    ```
-    
-    Jeśli występują problemy, kierujemy do [oficjalnej dokumentacji](https://www.docker.com/blog/how-to-use-the-postgres-docker-official-image/) lub skorzystanie z drugiego sposobu
+* Baza danych *PostgreSQL* : 5432
+* Backend *Spring Boot* : 8080
+* Frontend *React* : 3000
 
+Aplikacje można uruchomić również częściami w następującej kolejności:
 
-2) Pobranie PostgreSQL i użycie PgAdmina
+1. Baza danych:
+   ```
+   docker-compose up -d db
+   ```
 
-    Pobieramy PostgreSQL oraz PgAdmina ze strony [oficjalnej strony](https://www.postgresql.org/download/).
-    
-    Analogicznie należy pamiętać o zmianie danych logowania w pliku application.properties.
-    
-    W razie problemów odsyłamy do [poradnika](https://www.youtube.com/watch?v=0n41UTkOBb0&ab_channel=GeekyScript)
+2. Backend:
+   ```
+   docker-compose up -d backend
+   ```
 
-#### Backend
+3. Frontend:
+   ```
+   docker-compose up -d frontend
+   ```
+
+### Testowanie backendu
 
 Importujemy folder *backend* do Intellij: File -> Open.. Czekamy, aż Gradle pobierze wszystkie zależności i 
-zbuduje projekt. Aby uruchomić aplikację korzystamy z polecenia "Run" na klasie CombatSquadApplication (zielona strzałka)
+zbuduje projekt. Aby przetestować działanie aplikacji korzystamy z test runnera (zielona strzałka obok nazwy klasy testowej).
 
-Aplikacja powinna się uruchomić na porcie 8080
-
-Aby przetestować działanie aplikacji korzystamy z test runnera (zielona strzałka obok nazwy klasy testowej)
-
-#### Frontend
-
-Aby uruchomić aplikację frontendową należy najpierw zainstalować node.js (https://nodejs.org/en/)
-Projekt został stworzony przy użyciu wersji 16.17.0 jednak będzie działać również na wyższych wersjach.
-
-Importujemy folder *frontend* do Webstorm lub VS Code: File -> Open.. 
-
-Aby pobrać moduły node.js należy wpisać w terminalu:
-```
-npm install
-```
-Pozwoli nam to załadować wszystkie potrzebne biblioteki. Następnie wpisujemy:
-```
-npm start
-```
-
-Aplikacja powinna się uruchomić na porcie 3000.

@@ -4,11 +4,13 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -21,13 +23,11 @@ import java.util.function.Function;
 @Component
 public class JwtTokenProvider {
 
-//    @Value("${jwt.secret}")
-//    private String jwtSecret;
-    private String jwtSecret = "On1KRqsfehx80aLAHgshz5vcAknMdGWcOn1KRqsfehx80aLAHgshz5vcAknMdGWc";
+    @Value("${jwt.secret}")
+    private String jwtSecret;
 
-//    @Value("${jwt.expiration}")
-//    private int jwtExpiration;
-    private int jwtExpiration = 604800000;
+    @Value("${jwt.expiration}")
+    private int jwtExpiration;
 
     public String extractUsername(String token){
         return extractClaim(token, Claims::getSubject);
@@ -65,7 +65,7 @@ public class JwtTokenProvider {
                 .setSubject(userDetails.getUsername())
                 .claim("authorities", userDetails.getAuthorities())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))   // 7 days
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

@@ -6,6 +6,7 @@ import combat.squad.shared.role.Role;
 import combat.squad.vote.VoteEntity;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,6 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.util.*;
@@ -22,10 +24,11 @@ import java.util.*;
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "users")
+@Component
 public class UserEntity implements UserDetails {
 
     private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    private static JwtTokenProvider jwtTokenProvider = new JwtTokenProvider();
+    private static JwtTokenProvider jwtTokenProvider;
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -109,6 +112,11 @@ public class UserEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Autowired
+    public UserEntity(JwtTokenProvider jwtTokenProvider) {
+        UserEntity.jwtTokenProvider = jwtTokenProvider;
     }
 
 }

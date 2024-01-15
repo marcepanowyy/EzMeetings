@@ -77,28 +77,28 @@ public class VoteService {
     public VoteRo createVote(VoteDto voteDto, UserEntity voter) {
 
         ProposalEntity proposal = this.getProposalById(voteDto.proposalId());
-        Optional<VoteEntity> vote = this.voteRepository.findByVoterAndProposal(voter, proposal);
+        VoteEntity vote = this.findVoteByUserAndProposal(voter, proposal);
 
         // user has already voted on this proposal
 
-        if (vote.isPresent()) {
+        if (vote != null) {
 
-            vote.get().setState(voteDto.state());
-            vote = Optional.of(this.voteRepository.save(vote.get()));
-            return this.toVoteRo(vote.get(), false);
+            vote.setState(voteDto.state());
+            vote = this.voteRepository.save(vote);
+            return this.toVoteRo(vote, false);
 
         }
 
         // user has not voted on this proposal yet
 
-        vote = Optional.of(new VoteEntity(
+        vote = new VoteEntity(
                 voter,
                 proposal,
                 voteDto.state()
-        ));
+        );
 
-        vote = Optional.of(this.voteRepository.save(vote.get()));
-        return this.toVoteRo(vote.get(), false);
+        vote = this.voteRepository.save(vote);
+        return this.toVoteRo(vote, false);
 
     }
 
@@ -117,12 +117,12 @@ public class VoteService {
         proposal.getVotes().removeIf(vote -> vote.getId().equals(voteId));
         this.proposalRepository.save(proposal);
 
-        VoteEntity vote = this.findVoteById(voteId);
+        VoteEntity vote = this.getVoteById(voteId);
         this.voteRepository.delete(vote);
 
     }
 
-    public VoteEntity findVoteById(UUID voteId) {
+    public VoteEntity getVoteById(UUID voteId) {
 
         return this.voteRepository.findById(voteId)
                 .orElseThrow(() -> new ResponseStatusException(

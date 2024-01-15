@@ -1,0 +1,64 @@
+version: '3'
+
+services:
+
+  db:
+
+    container_name: db_container
+
+    image: postgres:latest
+
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+
+    ports:
+      - "5432:5432"
+
+    restart: always
+
+    networks:
+      - my_network
+
+  backend:
+
+    container_name: backend_container
+
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    
+    image: spring_boot_image
+
+    ports:
+      - "8080:8080"
+
+    depends_on:
+      - db
+
+    networks:
+      - my_network
+  
+
+  frontend:
+
+    container_name: frontend_container
+  
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    
+    image: react_image
+
+    ports:
+      - "3000:3000"
+    
+    networks:
+      - my_network
+
+
+networks:
+  my_network:
+    driver: bridge
+

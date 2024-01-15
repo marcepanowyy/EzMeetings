@@ -56,17 +56,17 @@ public class EventEntity {
     @CreatedDate
     private Date created;
 
-    private UUID finalProposalId;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "final_proposal_id")
+    private ProposalEntity finalProposal;
 
-    public EventEntity(String name, String description,String location, UserEntity creator, List<ProposalEntity> eventProposals) {
+    public EventEntity(String name, String description, String location, UserEntity creator, List<ProposalEntity> eventProposals) {
         this.name = name;
         this.description = description;
         this.location = location;
         this.creator = creator;
         this.eventProposals = eventProposals;
-        this.participants = List.of(creator);
-        this.finalProposalId = null;
-
+        this.participants = new ArrayList<>(List.of(creator));
+        this.finalProposal = null;
     }
-
 }
