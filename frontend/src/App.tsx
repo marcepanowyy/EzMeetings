@@ -8,8 +8,8 @@ import { action as logoutAction } from "./pages/Logout";
 
 import RootLayout from "./pages/RootLayout";
 import Home from "./components/Home";
-import EventList from "./components/event/EventList";
-import EventDetails from "./components/event/EventDetails";
+import EventList from "./components/event/EventList/EventList";
+import EventDetails from "./components/event/EventDetails/EventDetails";
 import CreateEvent from "./pages/CreateEvent";
 import EditEvent from "./pages/EditEvent";
 import Login from "./components/auth/Login";
