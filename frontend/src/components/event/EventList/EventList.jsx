@@ -6,10 +6,13 @@ import LoadingOverlay from "../../../ui/LoadingOverlay/LoadingOverlay";
 import EventSection from "./EventSection";
 import { getSimpleToken } from "../../../utils/auth";
 import styles from "./EventList.module.css";
+import useFeedbackReceive from "../../../hooks/useFeedbackReceive";
+import Feedback from "../../../ui/Feedback/Feedback";
 
 const EventList = () => {
   const navigate = useNavigate();
   const [eventId, setEventId] = useState("");
+  const { feedback, showFeedback } = useFeedbackReceive();
   const { data, isLoading, isError, error, email } = useEventsData();
   const token = getSimpleToken();
 
@@ -26,7 +29,11 @@ const EventList = () => {
       setEventId("");
       navigate(`/events/${eventId}`);
     } catch (err) {
-      console.log("error while participating: " + err);
+      showFeedback(
+        "error",
+        err.message ||
+          "You already participate in event or event does not exist",
+      );
     }
   };
 
@@ -36,6 +43,14 @@ const EventList = () => {
 
   return (
     <div className={styles.eventListSection}>
+      {feedback && (
+        <Feedback
+          feedback={feedback}
+          clearFeedback={() => {
+            showFeedback && showFeedback(null, "");
+          }}
+        />
+      )}
       <form
         method="post"
         onSubmit={onParticipateSubmit}
